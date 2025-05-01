@@ -8,20 +8,68 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      Photo.belongsTo(models.User, {
+        foreignKey: "user_id",
+        onDelete: "CASCADE",
+      });
+
+      Photo.hasMany(models.Comment, {
+        foreignKey: "photo_id",
+        onDelete: "CASCADE",
+      });
+
+      Photo.hasMany(models.Favorite, {
+        foreignKey: "photo_id",
+        onDelete: "CASCADE",
+      });
+
+      Photo.belongsToMany(models.Album, {
+        through: models.AlbumPhoto,
+        foreignKey: "photo_id",
+        otherKey: "album_id",
+      });
+
+      Photo.belongsToMany(models.Label, {
+        through: models.PhotoLabel,
+        foreignKey: "photo_id",
+        otherKey: "label_id",
+      });
     }
   }
   Photos.init(
     {
-      id: DataTypes.INTEGER,
-      user_id: DataTypes.INTEGER,
-      image_url: DataTypes.STRING,
-      title: DataTypes.STRING,
-      description: DataTypes.STRING,
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      user_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: "Users",
+          key: "id",
+        },
+        onDelete: "CASCADE",
+      },
+      image_url: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      title: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      description: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
     },
     {
       sequelize,
       modelName: "Photos",
+      tableName: "photos",
+      underscored: true,
     }
   );
   return Photos;

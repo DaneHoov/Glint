@@ -6,7 +6,6 @@ module.exports = {
     await queryInterface.bulkInsert("photos", [
       {
         userId: 1,
-        albumId: 1,
         url: "https://unsplash.com/photos/white-and-black-car-on-brown-sand-during-daytime-wtBex4wQw60",
         title: "Beach sunset",
         description: "car shoot",
@@ -33,6 +32,6 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.bulkDelete("photos", null, {});
+    await queryInterface.bulkDelete("Photos", null, {});
   },
 };

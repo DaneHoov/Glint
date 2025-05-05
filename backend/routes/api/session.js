@@ -79,4 +79,11 @@ router.get("/", (req, res) => {
   } else return res.json({ user: null });
 });
 
+//Get Current User
+router.get("/", (req, res) => {
+  if (req.user) {
+    return res.json(user);
+  }
+});
+
 module.exports = router;

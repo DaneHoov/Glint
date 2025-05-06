@@ -8,9 +8,9 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Album.belongsTo(models.User, { foreignKey: "user_id" });
-      Album.belongsToMany(models.Photo, {
-        through: models.AlbumPhoto,
+      Albums.belongsTo(models.User, { foreignKey: "user_id" });
+      Albums.belongsToMany(models.Photos, {
+        through: models.AlbumPhotos,
         foreignKey: "album_id",
         otherKey: "photo_id",
       });
@@ -18,7 +18,6 @@ module.exports = (sequelize, DataTypes) => {
   }
   Albums.init(
     {
-      id: DataTypes.INTEGER,
       user_id: {
         type: DataTypes.INTEGER,
         allowNull: false,

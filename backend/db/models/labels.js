@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       Labels.belongsToMany(models.Photos, {
-        through: models.PhotoLabel,
+        through: "PhotoLabels",
         foreignKey: "label_id",
         otherKey: "photo_id",
       });
@@ -17,7 +17,6 @@ module.exports = (sequelize, DataTypes) => {
   }
   Labels.init(
     {
-      // id: DataTypes.INTEGER,
       name: {
         type: DataTypes.STRING,
         allowNull: false,

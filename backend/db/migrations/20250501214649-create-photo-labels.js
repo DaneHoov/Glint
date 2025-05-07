@@ -8,44 +8,50 @@ if (process.env.NODE_ENV === "production") {
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("PhotoLabels", {
-      id: {
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
-        type: Sequelize.INTEGER,
-      },
-      photo_id: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-          model: "Photos",
-          key: "id",
+    await queryInterface.createTable(
+      { tableName: "PhotoLabels", schema: options.schema },
+      {
+        id: {
+          allowNull: false,
+          autoIncrement: true,
+          primaryKey: true,
+          type: Sequelize.INTEGER,
         },
-        onDelete: "CASCADE",
-      },
-      label_id: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-          model: "Labels",
-          key: "id",
+        photo_id: {
+          type: Sequelize.INTEGER,
+          allowNull: false,
+          references: {
+            model: { tableName: "Photos", schema: options.schema },
+            key: "id",
+          },
+          onDelete: "CASCADE",
         },
-        onDelete: "CASCADE",
-      },
-      createdAt: {
-        allowNull: false,
-        type: Sequelize.DATE,
-        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
-      },
-      updatedAt: {
-        allowNull: false,
-        type: Sequelize.DATE,
-        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
-      },
-    });
+        label_id: {
+          type: Sequelize.INTEGER,
+          allowNull: false,
+          references: {
+            model: { tableName: "Labels", schema: options.schema },
+            key: "id",
+          },
+          onDelete: "CASCADE",
+        },
+        createdAt: {
+          allowNull: false,
+          type: Sequelize.DATE,
+          defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+        },
+        updatedAt: {
+          allowNull: false,
+          type: Sequelize.DATE,
+          defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+        },
+      }
+    );
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("PhotoLabels");
+    await queryInterface.dropTable({
+      tableName: "PhotoLabels",
+      schema: options.schema,
+    });
   },
 };

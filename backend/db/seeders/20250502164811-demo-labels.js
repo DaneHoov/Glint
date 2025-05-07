@@ -1,9 +1,17 @@
 "use strict";
 
+const { Labels } = require("../models");
+const bcrypt = require("bcryptjs");
+
+let options = {};
+if (process.env.NODE_ENV === "production") {
+  options.schema = process.env.SCHEMA; // define your schema in options object
+}
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.bulkInsert("Labels", [
+    await Labels.bulkCreate([
       {
         name: "Nature",
         createdAt: new Date(),

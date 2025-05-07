@@ -1,9 +1,17 @@
 "use strict";
 
+const { Albums } = require("../models");
+const bcrypt = require("bcryptjs");
+
+let options = {};
+if (process.env.NODE_ENV === "production") {
+  options.schema = process.env.SCHEMA;
+}
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.bulkInsert("Albums", [
+    await Albums.bulkCreate([
       {
         user_id: 1,
         title: "Summer Vibes",

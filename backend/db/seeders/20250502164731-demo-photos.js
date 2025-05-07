@@ -1,9 +1,17 @@
 "use strict";
 
+const { Photos } = require("../models");
+const bcrypt = require("bcryptjs");
+
+let options = {};
+if (process.env.NODE_ENV === "production") {
+  options.schema = process.env.SCHEMA;
+}
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.bulkInsert("Photos", [
+    await Photos.bulkCreate([
       {
         user_id: 1,
         image_url:

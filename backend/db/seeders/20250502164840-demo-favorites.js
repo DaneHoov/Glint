@@ -40,6 +40,10 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.bulkDelete("Favorites", null, {});
+    await queryInterface.bulkDelete(
+      { tableName: "Favorites", schema: options.schema },
+      null,
+      {}
+    );
   },
 };

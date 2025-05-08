@@ -5,9 +5,9 @@ const usersRouter = require("./users.js");
 const photosRouter = require("./photos.js");
 const commentsRouter = require("./comments.js");
 const albumsRouter = require("./albums.js");
-const albumPhotosRouter = require("./albumPhotos.js");
+const albumPhotosRouter = require("./albumphotos.js");
 const labelsRouter = require("./labels.js");
-const photoLabelsRouter = require("./photoLabels.js");
+const photoLabelsRouter = require("./photolabels.js");
 const favoritesRouter = require("./favorites.js");
 
 const { restoreUser } = require("../../utils/auth.js");

@@ -1,0 +1,110 @@
+/* Background */
+body {
+  margin: 0;
+  padding: 0;
+  background: url("background-image.jpg") no-repeat center center fixed;
+  background-size: cover;
+  font-family: "Helvetica Neue", sans-serif;
+}
+
+/* Container for the form card */
+.signup-form__wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+/* The actual form box */
+.signup-form {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 32px 40px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  width: 360px;
+  text-align: center;
+}
+
+/* Flicker-style icon (optional) */
+.signup-form__logo {
+  margin-bottom: 16px;
+}
+
+.signup-form h1 {
+  font-size: 20px;
+  font-weight: 500;
+  margin-bottom: 24px;
+}
+
+/* Input container */
+.signup-form__input-container {
+  position: relative;
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+/* Input fields */
+.signup-form__input-container input {
+  width: 100%;
+  padding: 12px 12px 12px 8px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  outline: none;
+}
+
+/* Floating label style */
+.signup-form__input-container label {
+  position: absolute;
+  top: 12px;
+  left: 10px;
+  color: #aaa;
+  font-size: 16px;
+  transition: all 0.2s ease;
+  pointer-events: none;
+}
+
+/* When active or filled */
+.signup-form__input-container input:focus + label,
+.signup-form__input-container label.active {
+  top: -8px;
+  left: 6px;
+  font-size: 12px;
+  background-color: white;
+  padding: 0 4px;
+  color: #333;
+}
+
+/* Error message */
+.error {
+  color: #d93025;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+/* Submit button */
+.signup-form button {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  background-color: #0073e6;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.signup-form button:hover {
+  background-color: #005bb5;
+}
+
+/* Sign-in link */
+.signup-form__footer {
+  margin-top: 16px;
+  font-size: 14px;
+}
+
+.signup-form__footer a {
+  color: #0073e6;
+  text-decoration: none;
+}

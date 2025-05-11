@@ -1,10 +1,18 @@
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Outlet, createBrowserRouter, RouterProvider } from "react-router-dom";
+
 import LoginFormPage from "./components/LoginFormPage/LoginFormPage";
 import SignupFormPage from "./components/SignupFormPage/SignupFormPage";
 import Navigation from "./components/Navigation";
+
 import * as sessionActions from "./store/session";
+
+// Feature pages
+import PhotoList from "./components/Photos/PhotoList";
+import AlbumList from "./components/Albums/AlbumList";
+import FavoriteList from "./components/Favorites/FavoriteList";
+import CommentList from "./components/Comments/CommentList"; // Optional
 
 function Layout() {
   const dispatch = useDispatch();
@@ -39,6 +47,22 @@ const router = createBrowserRouter([
       {
         path: "signup",
         element: <SignupFormPage />,
+      },
+      {
+        path: "photos",
+        element: <PhotoList />,
+      },
+      {
+        path: "albums",
+        element: <AlbumList />,
+      },
+      {
+        path: "favorites",
+        element: <FavoriteList />,
+      },
+      {
+        path: "comments",
+        element: <CommentList comments={[]} />,
       },
     ],
   },

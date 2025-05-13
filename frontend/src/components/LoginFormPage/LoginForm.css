@@ -3,35 +3,86 @@
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background: url("/background.jpg") no-repeat center center fixed;
+  background-image: url("/images/loginbackground.jpg");
   background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  box-shadow: none;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.login-slogan {
+  margin: 10px 0 20px;
+  font-size: 1.2rem;
+  color: #333;
+  text-align: center;
+  font-weight: 400;
+  animation: fadeIn 3s ease-out forwards;
 }
 
 .login-box {
+  align-items: flex-start;
   background-color: white;
   padding: 2.5rem 3rem;
   border-radius: 10px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
   text-align: center;
+  box-shadow: none;
   width: 100%;
-  max-width: 400px;
+  max-width: 250px;
 }
 
-.login-box h2 {
-  margin-bottom: 1.5rem;
-  font-weight: 500;
-  font-size: 1.5rem;
+.login-box form {
+  box-shadow: none;
+  border: none;
+  background: none;
+  text-align: left;
+  padding-left: 5px;
 }
 
-.login-box input[type="email"],
-.login-box input[type="password"] {
+.login-icon {
+  color: #0063dc;
+  margin-bottom: 1rem;
+}
+
+.login-box input[type="text"],
+.login-box input[type="password"],
+.login-box input[type="email"] {
   width: 100%;
   padding: 0.75rem;
   margin-bottom: 1.25rem;
   border: 1px solid #ccc;
   border-radius: 5px;
   font-size: 1rem;
+  padding-left: 0.75rem;
+}
+
+.password-field {
+  position: relative;
+}
+
+.password-field input {
+  width: 100%;
+  padding-right: 2.5rem;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 40%;
+  right: 0.75rem;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #666;
 }
 
 .login-box button {
@@ -39,6 +90,7 @@
   padding: 0.75rem;
   background-color: #0063dc;
   color: white;
+  box-shadow: none;
   border: none;
   border-radius: 5px;
   font-weight: bold;
@@ -50,16 +102,19 @@
   background-color: #004bb5;
 }
 
-.login-box .signup-link {
-  margin-top: 1rem;
-  font-size: 0.9rem;
+.error {
+  color: red;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
 }
 
-.login-box .signup-link a {
+.signup-link {
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.signup-link a {
   color: #0063dc;
   text-decoration: none;
-}
-
-.login-box .signup-link a:hover {
-  text-decoration: underline;
 }

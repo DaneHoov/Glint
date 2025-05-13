@@ -1,4 +1,4 @@
-import PhotoCard from "../Photos/PhotoCard";
+import PhotoCard from "../PhotosPage/PhotoCard";
 
 export default function FavoriteList({ favorites }) {
   return (

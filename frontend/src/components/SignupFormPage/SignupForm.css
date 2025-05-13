@@ -1,110 +1,157 @@
-/* Background */
 body {
-  margin: 0;
-  padding: 0;
-  background: url("background-image.jpg") no-repeat center center fixed;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  background-image: url("/images/signupbackground.jpg");
   background-size: cover;
-  font-family: "Helvetica Neue", sans-serif;
+  background-position: center;
+  background-repeat: no-repeat;
+  margin: 0;
 }
 
-/* Container for the form card */
-.signup-form__wrapper {
+.signup-form-wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
 }
 
-/* The actual form box */
-.signup-form {
-  background-color: #fff;
+form {
+  background-color: white;
+  padding: 20px;
   border-radius: 8px;
-  padding: 32px 40px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-  width: 360px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 360px;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
   text-align: center;
 }
 
-/* Flicker-style icon (optional) */
-.signup-form__logo {
-  margin-bottom: 16px;
+.icon-container {
+  color: #0063dc;
+  margin-bottom: 1px;
 }
 
-.signup-form h1 {
-  font-size: 20px;
-  font-weight: 500;
-  margin-bottom: 24px;
+h1 {
+  font-size: 1.25rem;
+  color: #333;
+  margin-bottom: 20px;
+  font-weight: 400;
 }
 
-/* Input container */
-.signup-form__input-container {
-  position: relative;
-  margin-bottom: 24px;
-  text-align: left;
-}
-
-/* Input fields */
-.signup-form__input-container input {
+input {
   width: 100%;
-  padding: 12px 12px 12px 8px;
-  font-size: 16px;
+  padding: 10px;
+  margin-bottom: 15px;
+  font-size: 1rem;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: 5px;
+  box-sizing: border-box;
+  background-color: #f9f9f9;
+}
+
+input:focus {
+  border-color: #0055ff;
+  background-color: #fff;
   outline: none;
 }
 
-/* Floating label style */
-.signup-form__input-container label {
-  position: absolute;
-  top: 12px;
-  left: 10px;
-  color: #aaa;
-  font-size: 16px;
-  transition: all 0.2s ease;
-  pointer-events: none;
+button {
+  width: 100%;
+  padding: 12px;
+  background-color: #0055ff;
+  color: white;
+  font-size: 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
 
-/* When active or filled */
-.signup-form__input-container input:focus + label,
-.signup-form__input-container label.active {
-  top: -8px;
-  left: 6px;
-  font-size: 12px;
-  background-color: white;
-  padding: 0 4px;
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  color: #666;
+}
+
+p {
+  font-size: 0.875rem;
+  color: #e74c3c;
+  margin-top: -10px;
+  margin-bottom: 15px;
+}
+
+.password-input-container {
+  position: relative;
+  width: 100%;
+}
+
+.password-input-container input {
+  padding-right: 40px;
+  width: 100%;
+}
+
+.eye-toggle {
+  position: absolute;
+  right: 12px;
+  top: 40%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: auto;
+  width: auto;
+  z-index: 2;
+}
+.eye-toggle svg {
+  color: #555;
+  font-size: 1.25rem;
+}
+
+@media (max-width: 500px) {
+  form {
+    padding: 15px;
+    width: 90%;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+}
+
+.separator {
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Ensures the text is centered between the line and the bottom */
+  align-items: center;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.separator hr {
+  border: 0;
+  height: 1px;
+  background-color: #ccc;
+  margin-bottom: 10px;
+}
+
+.separator p {
+  font-size: 1rem;
   color: #333;
 }
 
-/* Error message */
-.error {
-  color: #d93025;
-  font-size: 12px;
-  margin-top: 4px;
-}
-
-/* Submit button */
-.signup-form button {
-  width: 100%;
-  padding: 12px;
-  font-size: 16px;
-  background-color: #0073e6;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.signup-form button:hover {
-  background-color: #005bb5;
-}
-
-/* Sign-in link */
-.signup-form__footer {
-  margin-top: 16px;
-  font-size: 14px;
-}
-
-.signup-form__footer a {
-  color: #0073e6;
+.separator a {
+  color: #0055ff;
   text-decoration: none;
 }
+
+/* .separator a:hover {
+  text-decoration: underline;
+} */

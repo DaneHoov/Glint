@@ -1,35 +1,22 @@
 import { csrfFetch } from "./csrf";
 
-const LOAD_PHOTOS = "photos/LOAD";
+const SET_PHOTOS = "photos/SET";
 const ADD_PHOTO = "photos/ADD";
 const UPDATE_PHOTO = "photos/UPDATE";
 const DELETE_PHOTO = "photos/DELETE";
 
-const loadPhotos = (photos) => ({
-  type: LOAD_PHOTOS,
-  photos,
-});
-
-const addPhoto = (photo) => ({
-  type: ADD_PHOTO,
-  photo,
-});
-
-const updatePhoto = (photo) => ({
-  type: UPDATE_PHOTO,
-  photo,
-});
-
-const deletePhoto = (photoId) => ({
-  type: DELETE_PHOTO,
-  photoId,
-});
+export const setPhotos = (photos) => ({ type: SET_PHOTOS, photos });
+export const addPhoto = (photo) => ({ type: ADD_PHOTO, photo });
+export const updatePhoto = (photo) => ({ type: UPDATE_PHOTO, photo });
+export const deletePhoto = (photoId) => ({ type: DELETE_PHOTO, photoId });
 
 export const fetchPhotos = () => async (dispatch) => {
   const res = await csrfFetch("/api/photos");
   if (res.ok) {
     const data = await res.json();
-    dispatch(loadPhotos(data.photos));
+    dispatch(setPhotos(data.photos));
+  } else {
+    console.error("Failed to load photos");
   }
 };
 
@@ -42,6 +29,9 @@ export const createPhoto = (photo) => async (dispatch) => {
     const data = await res.json();
     dispatch(addPhoto(data));
     return data;
+  } else {
+    console.error("Failed to create photo");
+    return null;
   }
 };
 
@@ -54,6 +44,9 @@ export const editPhoto = (photo) => async (dispatch) => {
     const data = await res.json();
     dispatch(updatePhoto(data));
     return data;
+  } else {
+    console.error("Failed to edit photo");
+    return null;
   }
 };
 
@@ -63,6 +56,10 @@ export const removePhoto = (photoId) => async (dispatch) => {
   });
   if (res.ok) {
     dispatch(deletePhoto(photoId));
+    return true;
+  } else {
+    console.error("Failed to delete photo");
+    return false;
   }
 };
 
@@ -70,10 +67,10 @@ const initialState = { allPhotos: [] };
 
 export default function photosReducer(state = initialState, action) {
   switch (action.type) {
-    case LOAD_PHOTOS:
+    case SET_PHOTOS:
       return { ...state, allPhotos: action.photos };
     case ADD_PHOTO:
-      return { ...state, allPhotos: [...state.allPhotos, action.photo] };
+      return { ...state, allPhotos: [action.photo, ...state.allPhotos] };
     case UPDATE_PHOTO:
       return {
         ...state,

@@ -8,11 +8,31 @@ import Navigation from "./components/Navigation";
 
 import * as sessionActions from "./store/session";
 
-// Feature pages
-import PhotoList from "./components/Photos/PhotoList";
-import AlbumList from "./components/Albums/AlbumList";
-import FavoriteList from "./components/Favorites/FavoriteList";
-import CommentList from "./components/Comments/CommentList"; // Optional
+import PhotoList from "./components/PhotosPage/PhotoList";
+import AlbumList from "./components/AlbumsPage/AlbumList";
+import AlbumForm from "./components/AlbumsPage/AlbumForm";
+
+import FavoriteList from "./components/FavoritesPage/FavoritesList";
+import FavoriteButton from "./components/FavoritesPage/FavoriteButton";
+
+import CommentList from "./components/CommentsPage/CommentList";
+import CommentForm from "./components/CommentsPage/CommentForm";
+
+// 🔍 NEW: Placeholder search results component
+function SearchResults() {
+  const queryParams = new URLSearchParams(window.location.search);
+  const query = queryParams.get("query");
+
+  return (
+    <div style={{ padding: "20px" }}>
+      <h2>Search Results</h2>
+      <p>
+        Searching for: <strong>{query}</strong>
+      </p>
+      {/* You can wire this up to Redux or backend later */}
+    </div>
+  );
+}
 
 function Layout() {
   const dispatch = useDispatch();
@@ -36,33 +56,37 @@ const router = createBrowserRouter([
   {
     element: <Layout />,
     children: [
-      {
-        path: "/",
-        element: <h1>Welcome!</h1>,
-      },
-      {
-        path: "login",
-        element: <LoginFormPage />,
-      },
-      {
-        path: "signup",
-        element: <SignupFormPage />,
-      },
-      {
-        path: "photos",
-        element: <PhotoList />,
-      },
+      { path: "/", element: <h1>Welcome!</h1> },
+      { path: "login", element: <LoginFormPage /> },
+      { path: "signup", element: <SignupFormPage /> },
+      { path: "photos", element: <PhotoList /> },
       {
         path: "albums",
-        element: <AlbumList />,
+        children: [
+          { index: true, element: <AlbumList /> },
+          { path: "new", element: <AlbumForm /> },
+          { path: ":albumId/edit", element: <AlbumForm /> },
+        ],
       },
       {
         path: "favorites",
-        element: <FavoriteList />,
+        children: [
+          { index: true, element: <FavoriteList /> },
+          { path: "button", element: <FavoriteButton photoId={1} /> },
+        ],
       },
       {
-        path: "comments",
-        element: <CommentList comments={[]} />,
+        path: "photos/:photoId",
+        children: [
+          { path: "comments", element: <CommentList comments={[]} /> },
+          { path: "comments/new", element: <CommentForm /> },
+          { path: "comments/:commentId/edit", element: <CommentForm /> },
+        ],
+      },
+      // 🔍 NEW: Search results route
+      {
+        path: "search",
+        element: <SearchResults />,
       },
     ],
   },

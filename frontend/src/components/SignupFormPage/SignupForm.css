@@ -1,17 +1,14 @@
-body {
+.signup-form-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
   font-family: "Helvetica Neue", Arial, sans-serif;
   background-image: url("/images/signupbackground.jpg");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   margin: 0;
-}
-
-.signup-form-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
 }
 
 form {
@@ -30,7 +27,7 @@ form {
 }
 
 .icon-container {
-  color: #0063dc;
+  color: #1cc1eb;
   margin-bottom: 1px;
 }
 

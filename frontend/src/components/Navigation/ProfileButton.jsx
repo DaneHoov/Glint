@@ -1,57 +1,91 @@
-import { useState, useEffect, useRef } from "react";
-import { useDispatch } from "react-redux";
+import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { FaUserCircle } from "react-icons/fa";
-import * as sessionActions from "../../store/session";
+import "./ProfileButton.css";
 
-function ProfileButton({ user }) {
-  const dispatch = useDispatch();
+function ProfileButton({ user, logout }) {
   const [showMenu, setShowMenu] = useState(false);
-  const ulRef = useRef();
+  const dropdownRef = useRef(null);
+  const navigate = useNavigate();
 
-  const toggleMenu = (e) => {
-    e.stopPropagation();
-    setShowMenu(!showMenu);
+  const toggleMenu = () => setShowMenu((prev) => !prev);
+  const closeMenu = () => setShowMenu(false);
+
+  const handleLogout = (e) => {
+    logout(e);
+    closeMenu();
   };
 
   useEffect(() => {
-    if (!showMenu) return;
-
-    const closeMenu = (e) => {
-      if (ulRef.current && !ulRef.current.contains(e.target)) {
-        setShowMenu(false);
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        closeMenu();
       }
     };
 
-    document.addEventListener("click", closeMenu);
+    if (showMenu) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
 
-    return () => document.removeEventListener("click", closeMenu);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, [showMenu]);
 
-  const logout = (e) => {
-    e.preventDefault();
-    dispatch(sessionActions.logout());
-  };
-
-  const ulClassName = "profile-dropdown" + (showMenu ? "" : " hidden");
-
   return (
-    <>
-      <button onClick={toggleMenu}>
-        <FaUserCircle />
+    <div className="profile-button-container" ref={dropdownRef}>
+      <button className="profile-icon-button" onClick={toggleMenu}>
+        <FaUserCircle size={24} />
       </button>
-      <ul className={ulClassName} ref={ulRef}>
-        {" "}
-        {/* <-- Attach it here */}
-        <li>{user.username}</li>
-        <li>
-          {user.firstName} {user.lastName}
-        </li>
-        <li>{user.email}</li>
-        <li>
-          <button onClick={logout}>Log Out</button>
-        </li>
-      </ul>
-    </>
+
+      {showMenu && (
+        <div className="profile-modal-dropdown">
+          <div className="profile-greeting-section">
+            <p className="greeting-title">‘Allo, {user.username}!</p>
+            <p className="greeting-sub">
+              Now you know how to greet people in English
+            </p>
+          </div>
+
+          <div className="upload-section">
+            <div className="upload-circle"></div>
+            <div className="upload-text">
+              <p>0 of 1,000 items</p>
+              <button
+                className="upload-link"
+                onClick={() => navigate("/upload")}
+              >
+                Upload your photos
+              </button>
+            </div>
+          </div>
+
+          <hr className="dropdown-divider" />
+
+          <button
+            className="dropdown-item"
+            onClick={() => navigate(`/users/${user.id}`)}
+          >
+            Profile
+          </button>
+          <button
+            className="dropdown-item"
+            onClick={() => navigate("/messages")}
+          >
+            Messages (0)
+          </button>
+          <button
+            className="dropdown-item"
+            onClick={() => navigate("/settings")}
+          >
+            Settings
+          </button>
+          <button className="dropdown-item logout" onClick={handleLogout}>
+            Log out
+          </button>
+        </div>
+      )}
+    </div>
   );
 }
 

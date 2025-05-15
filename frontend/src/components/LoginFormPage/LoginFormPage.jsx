@@ -14,7 +14,8 @@ function LoginFormPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
 
-  if (sessionUser) return <Navigate to="/" replace={true} />;
+  if (sessionUser)
+    return <Navigate to={`/users/${sessionUser.id}`} replace={true} />;
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -26,6 +27,9 @@ function LoginFormPage() {
       }
     );
   };
+
+  // Disable the submit button if either credential or password is empty
+  const isFormValid = credential && password;
 
   return (
     <div className="login-container">
@@ -58,7 +62,9 @@ function LoginFormPage() {
             </span>
           </div>
           {errors.credential && <p className="error">{errors.credential}</p>}
-          <button type="submit">Log In</button>
+          <button type="submit" disabled={!isFormValid}>
+            Log In
+          </button>
           <p className="signup-link">
             Don’t have an account? <a href="/signup">Sign up here</a>
           </p>

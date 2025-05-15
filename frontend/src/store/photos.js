@@ -1,87 +1,64 @@
 import { csrfFetch } from "./csrf";
 
-const SET_PHOTOS = "photos/SET";
-const ADD_PHOTO = "photos/ADD";
-const UPDATE_PHOTO = "photos/UPDATE";
-const DELETE_PHOTO = "photos/DELETE";
+const SET_PHOTOS = "photos/SET_PHOTOS";
+const ADD_PHOTO = "photos/ADD_PHOTO";
+const DELETE_PHOTO = "photos/DELETE_PHOTO";
 
 export const setPhotos = (photos) => ({ type: SET_PHOTOS, photos });
 export const addPhoto = (photo) => ({ type: ADD_PHOTO, photo });
-export const updatePhoto = (photo) => ({ type: UPDATE_PHOTO, photo });
 export const deletePhoto = (photoId) => ({ type: DELETE_PHOTO, photoId });
 
+// Fetch photos
 export const fetchPhotos = () => async (dispatch) => {
   const res = await csrfFetch("/api/photos");
   if (res.ok) {
     const data = await res.json();
-    dispatch(setPhotos(data.photos));
+    dispatch(setPhotos(data));
   } else {
-    console.error("Failed to load photos");
+    console.error("Failed to fetch photos");
   }
 };
 
-export const createPhoto = (photo) => async (dispatch) => {
+// Create photo
+export const createPhoto = (photoData) => async (dispatch) => {
   const res = await csrfFetch("/api/photos", {
     method: "POST",
-    body: JSON.stringify(photo),
+    body: JSON.stringify(photoData),
   });
+
   if (res.ok) {
-    const data = await res.json();
-    dispatch(addPhoto(data));
-    return data;
+    const newPhoto = await res.json();
+    dispatch(addPhoto(newPhoto));
   } else {
-    console.error("Failed to create photo");
-    return null;
+    console.error("Create photo failed");
   }
 };
 
-export const editPhoto = (photo) => async (dispatch) => {
-  const res = await csrfFetch(`/api/photos/${photo.id}`, {
-    method: "PUT",
-    body: JSON.stringify(photo),
-  });
-  if (res.ok) {
-    const data = await res.json();
-    dispatch(updatePhoto(data));
-    return data;
-  } else {
-    console.error("Failed to edit photo");
-    return null;
-  }
-};
-
+// Delete photo
 export const removePhoto = (photoId) => async (dispatch) => {
   const res = await csrfFetch(`/api/photos/${photoId}`, {
     method: "DELETE",
   });
+
   if (res.ok) {
     dispatch(deletePhoto(photoId));
-    return true;
   } else {
-    console.error("Failed to delete photo");
-    return false;
+    console.error("Delete photo failed");
   }
 };
 
-const initialState = { allPhotos: [] };
+const initialState = { all: [] };
 
 export default function photosReducer(state = initialState, action) {
   switch (action.type) {
     case SET_PHOTOS:
-      return { ...state, allPhotos: action.photos };
+      return { ...state, all: action.photos };
     case ADD_PHOTO:
-      return { ...state, allPhotos: [action.photo, ...state.allPhotos] };
-    case UPDATE_PHOTO:
-      return {
-        ...state,
-        allPhotos: state.allPhotos.map((p) =>
-          p.id === action.photo.id ? action.photo : p
-        ),
-      };
+      return { ...state, all: [action.photo, ...state.all] };
     case DELETE_PHOTO:
       return {
         ...state,
-        allPhotos: state.allPhotos.filter((p) => p.id !== action.photoId),
+        all: state.all.filter((photo) => photo.id !== action.photoId),
       };
     default:
       return state;

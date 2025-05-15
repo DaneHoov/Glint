@@ -1,0 +1,36 @@
+.comments-container {
+  padding: 1rem;
+  max-width: 800px;
+  margin: auto;
+}
+
+.comment-form textarea {
+  margin: 0.5rem;
+  padding: 0.5rem;
+}
+
+.comment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.comment-item {
+  border: 1px solid #ccc;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.comment-actions button {
+  margin: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  background-color: #f97316;
+  color: white;
+  border: none;
+  border-radius: 4px;
+}
+
+.comment-actions button:hover {
+  background-color: #c2410c;
+}

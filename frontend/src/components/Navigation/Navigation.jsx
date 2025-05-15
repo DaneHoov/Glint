@@ -1,11 +1,10 @@
-import { useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import ProfileButton from "./ProfileButton";
 import * as sessionActions from "../../store/session";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import { RiCameraLensAiFill } from "react-icons/ri";
-import { useLocation } from "react-router-dom";
 import "./Navigation.css";
 
 function Navigation({ isLoaded }) {
@@ -15,6 +14,16 @@ function Navigation({ isLoaded }) {
   const navigate = useNavigate();
   const [showSearch, setShowSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+
+  useEffect(() => {
+    // Auto-redirect to profile if logged in and on login/signup pages
+    if (
+      sessionUser &&
+      (location.pathname === "/login" || location.pathname === "/signup")
+    ) {
+      navigate(`/users/${sessionUser.id}`);
+    }
+  }, [sessionUser, location.pathname, navigate]);
 
   const toggleSearch = () => setShowSearch((prev) => !prev);
   const closeSearch = () => {
@@ -39,11 +48,11 @@ function Navigation({ isLoaded }) {
 
   const sessionLinks = sessionUser ? (
     <>
-      <FaMagnifyingGlass className="search-icon" onClick={toggleSearch} />
-      <ProfileButton user={sessionUser} />
-      <button className="nav-button" onClick={logout}>
-        Log Out
-      </button>
+      <FaMagnifyingGlass
+        className="search-icon logged-in"
+        onClick={toggleSearch}
+      />
+      <ProfileButton user={sessionUser} logout={logout} />
     </>
   ) : (
     <>
@@ -78,8 +87,8 @@ function Navigation({ isLoaded }) {
       <nav className="navigation-bar">
         <div className="nav-left">
           <NavLink className="nav-home" to="/">
-            <RiCameraLensAiFill />
-            Glint
+            <RiCameraLensAiFill className="logo-icon" />
+            <span className="logo-text">Glint</span>
           </NavLink>
         </div>
 

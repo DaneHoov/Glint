@@ -8,17 +8,13 @@ import Navigation from "./components/Navigation";
 
 import * as sessionActions from "./store/session";
 
-import PhotoList from "./components/PhotosPage/PhotoList";
-import AlbumList from "./components/AlbumsPage/AlbumList";
-import AlbumForm from "./components/AlbumsPage/AlbumForm";
+import PhotosPage from "./components/PhotosPage/PhotosPage";
+import AlbumsPage from "./components/AlbumsPage/AlbumsPage";
+import FavoritesPage from "./components/FavoritesPage/FavoritesPage";
+import CommentsPage from "./components/CommentsPage/CommentsPage";
 
-import FavoriteList from "./components/FavoritesPage/FavoritesList";
-import FavoriteButton from "./components/FavoritesPage/FavoriteButton";
+import UserProfilePage from "./components/UserProfilePage/UserProfilePage";
 
-import CommentList from "./components/CommentsPage/CommentList";
-import CommentForm from "./components/CommentsPage/CommentForm";
-
-// 🔍 NEW: Placeholder search results component
 function SearchResults() {
   const queryParams = new URLSearchParams(window.location.search);
   const query = queryParams.get("query");
@@ -56,38 +52,39 @@ const router = createBrowserRouter([
   {
     element: <Layout />,
     children: [
-      { path: "/", element: <h1>Welcome!</h1> },
+      { path: "/", element: <h1>See the world through a different lens</h1> },
+      { path: "users/:userId", element: <UserProfilePage /> },
       { path: "login", element: <LoginFormPage /> },
       { path: "signup", element: <SignupFormPage /> },
-      { path: "photos", element: <PhotoList /> },
+      {
+        path: "photos",
+        element: <PhotosPage />,
+        children: [
+          { index: true, element: <PhotosPage /> },
+          { path: "new", element: <PhotosPage /> },
+          { path: ":photoId/edit", element: <PhotosPage /> },
+        ],
+      },
       {
         path: "albums",
+        element: <AlbumsPage />,
         children: [
-          { index: true, element: <AlbumList /> },
-          { path: "new", element: <AlbumForm /> },
-          { path: ":albumId/edit", element: <AlbumForm /> },
+          { index: true, element: <AlbumsPage /> },
+          { path: "new", element: <AlbumsPage /> },
+          { path: ":albumId/edit", element: <AlbumsPage /> },
         ],
       },
       {
         path: "favorites",
-        children: [
-          { index: true, element: <FavoriteList /> },
-          { path: "button", element: <FavoriteButton photoId={1} /> },
-        ],
+        element: <FavoritesPage />,
+        children: [{ index: true, element: <FavoritesPage /> }],
       },
       {
-        path: "photos/:photoId",
-        children: [
-          { path: "comments", element: <CommentList comments={[]} /> },
-          { path: "comments/new", element: <CommentForm /> },
-          { path: "comments/:commentId/edit", element: <CommentForm /> },
-        ],
+        path: "comments",
+        element: <CommentsPage />,
+        children: [{ index: true, element: <CommentsPage /> }],
       },
-      // 🔍 NEW: Search results route
-      {
-        path: "search",
-        element: <SearchResults />,
-      },
+      { path: "search", element: <SearchResults /> },
     ],
   },
 ]);

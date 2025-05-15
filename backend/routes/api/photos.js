@@ -1,55 +1,74 @@
 const express = require("express");
+const { Photo, User } = require("../../db/models");
+const { requireAuth } = require("../../utils/auth");
 const router = express.Router();
-const { Photos } = require("../../db/models");
 
-// GET /photos - Get all photos
+// GET all photos
 router.get("/", async (req, res) => {
-  const photos = await Photos.findAll();
-  res.json(photos);
+  const photos = await Photo.findAll();
+  return res.json({ photos });
 });
 
-// GET /photos/:id - Get a single photo by ID
-router.get("/:id", async (req, res) => {
-  const photo = await Photos.findByPk(req.params.id);
-  if (photo) {
-    res.json(photo);
-  } else {
-    res.status(404).json({ error: "Photo not found" });
+// POST create a new photo
+router.post("/", requireAuth, async (req, res, next) => {
+  try {
+    const { title, url, description } = req.body;
+    const newPhoto = await Photo.create({
+      title,
+      url,
+      description,
+      userId: req.user.id,
+    });
+    return res.status(201).json(newPhoto);
+  } catch (err) {
+    next(err);
   }
 });
 
-// POST /photos - Create a new photo
-router.post("/", async (req, res) => {
-  const { user_id, image_url, title, description } = req.body;
-  const newPhoto = await Photos.create({
-    user_id,
-    image_url,
-    title,
-    description,
-  });
-  res.status(201).json(newPhoto);
-});
+// PUT update a photo
+router.put("/:id", requireAuth, async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { title, url, description } = req.body;
 
-// PUT /photos/:id - Update a photo
-router.put("/:id", async (req, res) => {
-  const photo = await Photos.findByPk(req.params.id);
-  if (photo) {
-    const { image_url, title, description } = req.body;
-    await photo.update({ image_url, title, description });
-    res.json(photo);
-  } else {
-    res.status(404).json({ error: "Photo not found" });
+    const photo = await Photo.findByPk(id);
+    if (!photo) {
+      return res.status(404).json({ message: "Photo not found" });
+    }
+
+    if (photo.userId !== req.user.id) {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+
+    photo.title = title;
+    photo.url = url;
+    photo.description = description;
+    await photo.save();
+
+    return res.json(photo);
+  } catch (err) {
+    next(err);
   }
 });
 
-// DELETE /photos/:id - Delete a photo
-router.delete("/:id", async (req, res) => {
-  const photo = await Photos.findByPk(req.params.id);
-  if (photo) {
+// DELETE a photo
+router.delete("/:id", requireAuth, async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const photo = await Photo.findByPk(id);
+    if (!photo) {
+      return res.status(404).json({ message: "Photo not found" });
+    }
+
+    if (photo.userId !== req.user.id) {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+
     await photo.destroy();
-    res.json({ message: "Photo deleted" });
-  } else {
-    res.status(404).json({ error: "Photo not found" });
+    return res.json({ message: "Photo deleted" });
+  } catch (err) {
+    next(err);
   }
 });
 

@@ -1,53 +1,44 @@
 const express = require("express");
 const router = express.Router();
-const { Favorite, Photos } = require("../../db/models");
 const { requireAuth } = require("../../utils/auth");
+const { Favorite } = require("../../db/models");
 
-// POST /favorites - Favorite a photo
-router.post("/", requireAuth, async (req, res) => {
-  const { photoId } = req.body;
-  const userId = req.user.id;
-
-  const photo = await Photos.findByPk(photoId);
-  if (!photo) {
-    return res.status(404).json({ message: "Photo not found" });
-  }
-
-  const existing = await Favorite.findOne({ where: { photoId, userId } });
-  if (existing) {
-    return res.status(400).json({ message: "Photo already favorited" });
-  }
-
-  const newFavorite = await Favorite.create({ photoId, userId });
-  res.status(201).json(newFavorite);
-});
-
-// GET /favorites - Get all favorited photos by the logged-in user
+// GET current user's favorites (requires auth)
 router.get("/", requireAuth, async (req, res) => {
   const favorites = await Favorite.findAll({
     where: { userId: req.user.id },
-    include: {
-      model: Photos,
-    },
   });
-
   res.json(favorites);
 });
 
-// DELETE /favorites/:id - Remove a favorite (only by owner)
-router.delete("/:id", requireAuth, async (req, res) => {
-  const favorite = await Favorite.findByPk(req.params.id);
-
-  if (!favorite) {
-    return res.status(404).json({ message: "Favorite not found" });
+// POST add a favorite (requires auth)
+router.post("/", requireAuth, async (req, res, next) => {
+  try {
+    const { photoId } = req.body;
+    const favorite = await Favorite.create({
+      userId: req.user.id,
+      photoId,
+    });
+    res.status(201).json(favorite);
+  } catch (err) {
+    next(err);
   }
+});
 
-  if (favorite.userId !== req.user.id) {
-    return res.status(403).json({ message: "Unauthorized" });
+// DELETE remove a favorite (requires auth and ownership)
+router.delete("/:favoriteId", requireAuth, async (req, res, next) => {
+  try {
+    const favorite = await Favorite.findByPk(req.params.favoriteId);
+
+    if (!favorite) return res.status(404).json({ error: "Favorite not found" });
+    if (favorite.userId !== req.user.id)
+      return res.status(403).json({ error: "Unauthorized" });
+
+    await favorite.destroy();
+    res.json({ message: "Favorite removed" });
+  } catch (err) {
+    next(err);
   }
-
-  await favorite.destroy();
-  res.json({ message: "Favorite removed successfully" });
 });
 
 module.exports = router;

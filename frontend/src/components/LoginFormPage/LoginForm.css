@@ -39,7 +39,7 @@
   text-align: center;
   box-shadow: none;
   width: 100%;
-  max-width: 250px;
+  max-width: 375px;
 }
 
 .login-box form {
@@ -51,7 +51,7 @@
 }
 
 .login-icon {
-  color: #0063dc;
+  color: #1cc1eb;
   margin-bottom: 1rem;
 }
 
@@ -88,7 +88,7 @@
 .login-box button {
   width: 100%;
   padding: 0.75rem;
-  background-color: #0063dc;
+  background-color: #1cc1eb;
   color: white;
   box-shadow: none;
   border: none;
@@ -99,7 +99,7 @@
 }
 
 .login-box button:hover {
-  background-color: #004bb5;
+  background-color: #1cc1eb;
 }
 
 .error {

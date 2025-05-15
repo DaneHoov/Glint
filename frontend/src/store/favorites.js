@@ -1,13 +1,19 @@
+import { csrfFetch } from "./csrf";
+
 const SET_FAVORITES = "favorites/SET_FAVORITES";
 const ADD_FAVORITE = "favorites/ADD_FAVORITE";
 const REMOVE_FAVORITE = "favorites/REMOVE_FAVORITE";
 
 export const setFavorites = (favorites) => ({ type: SET_FAVORITES, favorites });
-export const addFavorite = (photo) => ({ type: ADD_FAVORITE, photo });
-export const removeFavorite = (photoId) => ({ type: REMOVE_FAVORITE, photoId });
+export const addFavorite = (favorite) => ({ type: ADD_FAVORITE, favorite });
+export const removeFavorite = (favoriteId) => ({
+  type: REMOVE_FAVORITE,
+  favoriteId,
+});
 
+// Fetch favorites
 export const fetchFavorites = () => async (dispatch) => {
-  const res = await fetch("/api/favorites");
+  const res = await csrfFetch("/api/favorites");
   if (res.ok) {
     const data = await res.json();
     dispatch(setFavorites(data));
@@ -16,34 +22,31 @@ export const fetchFavorites = () => async (dispatch) => {
   }
 };
 
-export const createFavorite = (photoId) => async (dispatch) => {
-  const res = await fetch(`/api/photos/${photoId}/favorite`, {
+// Add favorite
+export const addFavoriteThunk = (photoId) => async (dispatch) => {
+  const res = await csrfFetch(`/api/favorites`, {
     method: "POST",
+    body: JSON.stringify({ photoId }),
   });
 
   if (res.ok) {
-    const favoritedPhoto = await res.json();
-    dispatch(addFavorite(favoritedPhoto));
-    return favoritedPhoto;
+    const newFavorite = await res.json();
+    dispatch(addFavorite(newFavorite));
   } else {
-    const error = await res.json();
-    console.error("Create favorite failed:", error);
-    return null;
+    console.error("Add favorite failed");
   }
 };
 
-export const deleteFavorite = (photoId) => async (dispatch) => {
-  const res = await fetch(`/api/photos/${photoId}/favorite`, {
+// Remove favorite
+export const removeFavoriteThunk = (favoriteId) => async (dispatch) => {
+  const res = await csrfFetch(`/api/favorites/${favoriteId}`, {
     method: "DELETE",
   });
 
   if (res.ok) {
-    dispatch(removeFavorite(photoId));
-    return true;
+    dispatch(removeFavorite(favoriteId));
   } else {
-    const error = await res.json();
-    console.error("Delete favorite failed:", error);
-    return false;
+    console.error("Remove favorite failed");
   }
 };
 
@@ -54,11 +57,11 @@ export default function favoritesReducer(state = initialState, action) {
     case SET_FAVORITES:
       return { ...state, all: action.favorites };
     case ADD_FAVORITE:
-      return { ...state, all: [action.photo, ...state.all] };
+      return { ...state, all: [action.favorite, ...state.all] };
     case REMOVE_FAVORITE:
       return {
         ...state,
-        all: state.all.filter((p) => p.id !== action.photoId),
+        all: state.all.filter((favorite) => favorite.id !== action.favoriteId),
       };
     default:
       return state;

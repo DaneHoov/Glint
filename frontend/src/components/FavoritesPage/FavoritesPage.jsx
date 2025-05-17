@@ -1,47 +1,36 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  fetchFavorites,
-  addFavorite,
-  removeFavorite,
-} from "../../store/favorites";
+import { fetchFavorites, removeFavorite } from "../../store/favorites";
 import "./FavoritesPage.css";
 
 export default function FavoritesPage() {
   const dispatch = useDispatch();
-  const favorites = useSelector((state) => state.favorites.all);
-  const [formData, setFormData] = useState({ photoId: "" });
+  const favorites = useSelector((state) => state.favorites.allFavorites || []);
 
   useEffect(() => {
     dispatch(fetchFavorites());
   }, [dispatch]);
 
-  const handleAddFavorite = async () => {
-    await dispatch(addFavorite(formData));
-    setFormData({ photoId: "" });
-  };
-
-  const handleRemoveFavorite = (id) => {
-    dispatch(removeFavorite(id));
+  const handleRemoveFavorite = async (photoId) => {
+    const success = await dispatch(removeFavorite(photoId));
+    if (!success) {
+      alert("Failed to remove favorite");
+    }
   };
 
   return (
     <div className="favorites-container">
-      <h2>Add Photo to Favorites</h2>
-      <input
-        type="text"
-        placeholder="Photo ID"
-        value={formData.photoId}
-        onChange={(e) => setFormData({ photoId: e.target.value })}
-      />
-      <button onClick={handleAddFavorite}>Add Favorite</button>
-
       <h2>Your Favorites</h2>
-      <div className="favorite-list">
+      <div className="favorite-grid">
+        {favorites.length === 0 && <p>No favorites yet.</p>}
         {favorites.map((favorite) => (
-          <div className="favorite-item" key={favorite.id}>
-            <p>Photo ID: {favorite.photoId}</p>
-            <button onClick={() => handleRemoveFavorite(favorite.id)}>
+          <div className="favorite-card" key={favorite.id}>
+            <img
+              src={favorite.Photo?.image_url}
+              alt={favorite.Photo?.title || "Favorite photo"}
+              className="favorite-photo"
+            />
+            <button onClick={() => handleRemoveFavorite(favorite.photoId)}>
               Remove
             </button>
           </div>

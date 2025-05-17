@@ -1,18 +1,28 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  fetchAlbums,
-  createAlbum,
-  editAlbum,
-  removeAlbum,
-} from "../../store/albums";
+import { useNavigate } from "react-router-dom";
+import { fetchAlbums, createAlbum } from "../../store/albums";
 import "./AlbumsPage.css";
+import AlbumModal from "./AlbumModal";
 
 export default function AlbumsPage() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const albums = useSelector((state) => state.albums.all);
   const [formData, setFormData] = useState({ title: "", description: "" });
-  const [editingId, setEditingId] = useState(null);
+  const [showForm, setShowForm] = useState(false);
+  const [selectedAlbum, setSelectedAlbum] = useState(null);
+  const [showAlbumModal, setShowAlbumModal] = useState(false);
+
+  const openAlbumModal = (album) => {
+    setSelectedAlbum(album);
+    setShowAlbumModal(true);
+  };
+
+  const closeAlbumModal = () => {
+    setSelectedAlbum(null);
+    setShowAlbumModal(false);
+  };
 
   useEffect(() => {
     dispatch(fetchAlbums());
@@ -24,65 +34,66 @@ export default function AlbumsPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (editingId) {
-      await dispatch(editAlbum(editingId, formData));
-      setEditingId(null);
-    } else {
-      await dispatch(createAlbum({ ...formData, user_id: 1 })); // Replace user_id
-    }
+    const newAlbum = await dispatch(createAlbum(formData));
+    if (newAlbum) navigate("/albums");
     setFormData({ title: "", description: "" });
-  };
-
-  const handleDelete = (id) => {
-    dispatch(removeAlbum(id));
+    setShowForm(false);
   };
 
   return (
     <div className="albums-container">
-      <h2>{editingId ? "Edit Album" : "Add New Album"}</h2>
-      <form className="album-form" onSubmit={handleSubmit}>
-        <input
-          type="text"
-          name="title"
-          placeholder="Album Title"
-          value={formData.title}
-          onChange={handleChange}
-          required
-        />
-        <textarea
-          name="description"
-          placeholder="Album Description"
-          value={formData.description}
-          onChange={handleChange}
-        />
-        <button type="submit">
-          {editingId ? "Update Album" : "Create Album"}
-        </button>
-      </form>
+      <h2 className="albums-heading">All Albums</h2>
 
-      <h2>All Albums</h2>
-      <div className="album-list">
-        {albums.map((album) => (
-          <div className="album-item" key={album.id}>
-            <h3>{album.title}</h3>
-            <p>{album.description}</p>
-            <div className="album-actions">
-              <button
-                onClick={() => {
-                  setFormData({
-                    title: album.title,
-                    description: album.description,
-                  });
-                  setEditingId(album.id);
-                }}
-              >
-                Edit
-              </button>
-              <button onClick={() => handleDelete(album.id)}>Delete</button>
+      {albums.length === 0 ? (
+        <div className="no-albums">
+          <p>You have no memories, create them now.</p>
+          <button onClick={() => setShowForm(true)}>Create Album</button>
+        </div>
+      ) : null}
+
+      {showForm && (
+        <>
+          <h2>Add New Album</h2>
+          <form className="album-form" onSubmit={handleSubmit}>
+            <input
+              type="text"
+              name="title"
+              placeholder="Album Title"
+              value={formData.title}
+              onChange={handleChange}
+              required
+            />
+            <textarea
+              name="description"
+              placeholder="Album Description"
+              value={formData.description}
+              onChange={handleChange}
+            />
+            <button type="submit" disabled={!formData.title.trim()}>
+              Create Album
+            </button>
+          </form>
+        </>
+      )}
+
+      {albums.length > 0 && (
+        <div className="album-list grid-5">
+          {albums.map((album) => (
+            <div
+              className="album-item"
+              key={album.id}
+              onClick={() => openAlbumModal(album)}
+              style={{ cursor: "pointer" }}
+            >
+              <h3>{album.title}</h3>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
+
+      {showAlbumModal && selectedAlbum && (
+        <AlbumModal album={selectedAlbum} onClose={closeAlbumModal} />
+      )}
     </div>
   );
 }

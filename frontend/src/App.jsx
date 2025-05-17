@@ -1,6 +1,11 @@
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { Outlet, createBrowserRouter, RouterProvider } from "react-router-dom";
+import {
+  Outlet,
+  createBrowserRouter,
+  RouterProvider,
+  useNavigate,
+} from "react-router-dom";
 
 import LoginFormPage from "./components/LoginFormPage/LoginFormPage";
 import SignupFormPage from "./components/SignupFormPage/SignupFormPage";
@@ -12,6 +17,7 @@ import PhotosPage from "./components/PhotosPage/PhotosPage";
 import AlbumsPage from "./components/AlbumsPage/AlbumsPage";
 import FavoritesPage from "./components/FavoritesPage/FavoritesPage";
 import CommentsPage from "./components/CommentsPage/CommentsPage";
+import Home from "./components/Home/Home";
 
 import UserProfilePage from "./components/UserProfilePage/UserProfilePage";
 
@@ -25,13 +31,14 @@ function SearchResults() {
       <p>
         Searching for: <strong>{query}</strong>
       </p>
-      {/* You can wire this up to Redux or backend later */}
+      {/* Wire up search results logic here */}
     </div>
   );
 }
 
 function Layout() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
@@ -40,9 +47,15 @@ function Layout() {
     });
   }, [dispatch]);
 
+  const handleLogout = async () => {
+    await dispatch(sessionActions.logout());
+    // Redirect to login after logout
+    navigate("/login");
+  };
+
   return (
     <>
-      <Navigation isLoaded={isLoaded} />
+      <Navigation isLoaded={isLoaded} onLogout={handleLogout} />
       {isLoaded && <Outlet />}
     </>
   );
@@ -52,7 +65,7 @@ const router = createBrowserRouter([
   {
     element: <Layout />,
     children: [
-      { path: "/", element: <h1>See the world through a different lens</h1> },
+      { path: "/", element: <Home /> },
       { path: "users/:userId", element: <UserProfilePage /> },
       { path: "login", element: <LoginFormPage /> },
       { path: "signup", element: <SignupFormPage /> },

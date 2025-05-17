@@ -22,18 +22,16 @@ export const removePhotoFromAlbum = (albumId, photoId) => ({
   photoId,
 });
 
-// Fetch albums with photo
 export const fetchAlbums = () => async (dispatch) => {
   const res = await csrfFetch("/api/albums");
   if (res.ok) {
     const data = await res.json();
-    dispatch(setAlbums(data));
+    dispatch(setAlbums(data.albums));
   } else {
     console.error("Failed to fetch albums");
   }
 };
 
-// Create album with photos
 export const createAlbum = (albumData) => async (dispatch) => {
   const res = await csrfFetch("/api/albums", {
     method: "POST",
@@ -51,7 +49,6 @@ export const createAlbum = (albumData) => async (dispatch) => {
   }
 };
 
-// Edit album with new photo IDs
 export const editAlbum = (albumId, albumData) => async (dispatch) => {
   const res = await csrfFetch(`/api/albums/${albumId}`, {
     method: "PUT",
@@ -69,7 +66,6 @@ export const editAlbum = (albumId, albumData) => async (dispatch) => {
   }
 };
 
-// Remove album
 export const removeAlbum = (albumId) => async (dispatch) => {
   const res = await csrfFetch(`/api/albums/${albumId}`, {
     method: "DELETE",
@@ -85,22 +81,24 @@ export const removeAlbum = (albumId) => async (dispatch) => {
   }
 };
 
-// Add photo to album
 export const addPhotoToAlbumThunk = (albumId, photoId) => async (dispatch) => {
   const res = await csrfFetch(`/api/albums/${albumId}/photos`, {
     method: "POST",
-    body: JSON.stringify({ photo_id: photoId }),
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ photoId }),
   });
 
   if (res.ok) {
-    const data = await res.json();
-    dispatch(addPhotoToAlbum(albumId, data));
+    const updatedAlbum = await res.json();
+    dispatch(updateAlbum(updatedAlbum));
+    return updatedAlbum;
   } else {
-    console.error("Failed to add photo to album");
+    const error = await res.json();
+    console.error("Failed to add photo to album:", error);
+    throw new Error(error.message || "Failed to add photo to album.");
   }
 };
 
-// Remove photo from album
 export const removePhotoFromAlbumThunk =
   (albumId, photoId) => async (dispatch) => {
     const res = await csrfFetch(`/api/albums/${albumId}/photos/${photoId}`, {

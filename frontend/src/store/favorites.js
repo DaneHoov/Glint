@@ -1,67 +1,90 @@
 import { csrfFetch } from "./csrf";
 
+// Action Types
 const SET_FAVORITES = "favorites/SET_FAVORITES";
-const ADD_FAVORITE = "favorites/ADD_FAVORITE";
-const REMOVE_FAVORITE = "favorites/REMOVE_FAVORITE";
+const SET_FAVORITE_COUNT = "favorites/SET_FAVORITE_COUNT";
 
-export const setFavorites = (favorites) => ({ type: SET_FAVORITES, favorites });
-export const addFavorite = (favorite) => ({ type: ADD_FAVORITE, favorite });
-export const removeFavorite = (favoriteId) => ({
-  type: REMOVE_FAVORITE,
-  favoriteId,
+// Action Creators
+const setFavorites = (favorites) => ({
+  type: SET_FAVORITES,
+  favorites,
 });
 
-// Fetch favorites
+const setFavoriteCount = (photoId, count) => ({
+  type: SET_FAVORITE_COUNT,
+  photoId,
+  count,
+});
+
+// Thunks
+
 export const fetchFavorites = () => async (dispatch) => {
-  const res = await csrfFetch("/api/favorites");
+  const res = await csrfFetch("/api/favorites/current");
   if (res.ok) {
     const data = await res.json();
-    dispatch(setFavorites(data));
-  } else {
-    console.error("Failed to fetch favorites");
+    dispatch(setFavorites(data.favorites));
   }
 };
 
-// Add favorite
-export const addFavoriteThunk = (photoId) => async (dispatch) => {
-  const res = await csrfFetch(`/api/favorites`, {
+export const addFavorite = (photoId) => async (dispatch) => {
+  const res = await csrfFetch(`/api/favorites/photo/${photoId}`, {
     method: "POST",
-    body: JSON.stringify({ photoId }),
   });
 
-  if (res.ok) {
-    const newFavorite = await res.json();
-    dispatch(addFavorite(newFavorite));
-  } else {
-    console.error("Add favorite failed");
-  }
+  const data = await res.json();
+  dispatch(setFavoriteCount(photoId, data.count));
+  dispatch(setFavorites(data.favorites));
 };
 
-// Remove favorite
-export const removeFavoriteThunk = (favoriteId) => async (dispatch) => {
-  const res = await csrfFetch(`/api/favorites/${favoriteId}`, {
+export const removeFavorite = (photoId) => async (dispatch) => {
+  const res = await csrfFetch(`/api/favorites/photo/${photoId}`, {
     method: "DELETE",
   });
 
   if (res.ok) {
-    dispatch(removeFavorite(favoriteId));
+    const data = await res.json();
+    dispatch(setFavoriteCount(photoId, data.count));
+    dispatch(setFavorites(data.favorites));
+    return true;
   } else {
-    console.error("Remove favorite failed");
+    const error = await res.json();
+    console.error("Failed to remove favorite:", error);
+    return false;
   }
 };
 
-const initialState = { all: [] };
+export const fetchFavoriteCount = (photoId) => async (dispatch) => {
+  const res = await csrfFetch(`/api/favorites/photo/${photoId}/count`);
+  if (res.ok) {
+    const data = await res.json();
+    dispatch(setFavoriteCount(photoId, data.count));
+    return data.hasFavorited;
+  } else {
+    throw new Error("Failed to fetch favorite count");
+  }
+};
 
+// Initial State
+const initialState = {
+  allFavorites: [],
+  favoriteCounts: {},
+};
+
+// Reducer
 export default function favoritesReducer(state = initialState, action) {
   switch (action.type) {
     case SET_FAVORITES:
-      return { ...state, all: action.favorites };
-    case ADD_FAVORITE:
-      return { ...state, all: [action.favorite, ...state.all] };
-    case REMOVE_FAVORITE:
       return {
         ...state,
-        all: state.all.filter((favorite) => favorite.id !== action.favoriteId),
+        allFavorites: action.favorites,
+      };
+    case SET_FAVORITE_COUNT:
+      return {
+        ...state,
+        favoriteCounts: {
+          ...state.favoriteCounts,
+          [action.photoId]: action.count,
+        },
       };
     default:
       return state;

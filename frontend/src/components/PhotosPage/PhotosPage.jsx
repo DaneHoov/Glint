@@ -1,54 +1,84 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchPhotos, removePhoto } from "../../store/photos";
-// import { useNavigate } from "react-router-dom";
+import { fetchPhotos, deletePhoto } from "../../store/photos";
+import PhotosDetailsModal from "./PhotosDetailsModal";
+import { FaCamera, FaTimesCircle } from "react-icons/fa";
 import "./PhotosPage.css";
-import OpenModalButton from '../OpenModalButton';
-import PhotoFormModal from './PhotoFormModal';
 
 const PhotosPage = () => {
   const dispatch = useDispatch();
-//   const navigate = useNavigate();
+  const photos = useSelector((state) => state.photos.all);
+  const sessionUser = useSelector((state) => state.session.user);
 
-  const allPhotos = useSelector((state) => state.photos.allPhotos || {});
-  const photos = Object.values(allPhotos);
+  const [selectedPhoto, setSelectedPhoto] = useState(null);
 
   useEffect(() => {
     dispatch(fetchPhotos());
   }, [dispatch]);
 
-  const handleDelete = (photoId) => {
-    dispatch(removePhoto(photoId));
+  const handlePhotoClick = (photo) => {
+    setSelectedPhoto({
+      ...photo,
+      url: photo.image_url,
+    });
   };
+
+  const handleDelete = (photoId) => {
+    dispatch(deletePhoto(photoId));
+  };
+
+  const userPhotos = photos.filter(
+    (photo) => photo.user_id === sessionUser?.id
+  );
 
   return (
     <div className="photos-page">
-      <h1 className="photos-page-header">Photos</h1>
-
-      {/* Modal button for creating new photo */}
-      <OpenModalButton
-        buttonText="Create New Photo"
-        modalComponent={<PhotoFormModal />}
-        className="create-photo-button"
-      />
-
-      <div className="photo-gallery">
-        <h2>All Photos</h2>
-        <div className="photos-list">
-          {photos.map((photo) => (
-            <div key={photo.id} className="photo-card">
-              <img src={photo.url} alt={photo.description || "Photo"} />
-              <p>{photo.description}</p>
-              <button
-                className="delete-btn"
-                onClick={() => handleDelete(photo.id)}
-              >
-                Delete
-              </button>
-            </div>
-          ))}
+      <div className="photos-header">
+        <h1>My Photos</h1>
+        <div className="create-photo-container">
+          <button
+            className="create-photo-button"
+            onClick={() => setSelectedPhoto({ isNew: true })}
+          >
+            <FaCamera className="camera-icon" />
+            Create New Photo
+          </button>
         </div>
       </div>
+
+      <div className="photo-grid">
+        {userPhotos.map((photo) => (
+          <div
+            key={photo.id}
+            className="photo-card"
+            onClick={() => handlePhotoClick(photo)}
+          >
+            <div className="photo-card__img-container">
+              <img src={photo.image_url} alt={photo.title} />
+            </div>
+            <div className="photo-details">
+              <h3>{photo.title}</h3>
+              <p>{photo.description}</p>
+            </div>
+            <button
+              className="photo-remove-btn"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDelete(photo.id);
+              }}
+            >
+              <FaTimesCircle />
+            </button>
+          </div>
+        ))}
+      </div>
+
+      {selectedPhoto && (
+        <PhotosDetailsModal
+          photo={selectedPhoto}
+          onClose={() => setSelectedPhoto(null)}
+        />
+      )}
     </div>
   );
 };

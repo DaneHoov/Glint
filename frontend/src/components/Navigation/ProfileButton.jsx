@@ -11,8 +11,17 @@ function ProfileButton({ user, logout }) {
   const toggleMenu = () => setShowMenu((prev) => !prev);
   const closeMenu = () => setShowMenu(false);
 
-  const handleLogout = (e) => {
-    logout(e);
+  const handleLogout = async (e) => {
+    e.preventDefault();
+    if (logout) {
+      await logout(); // call logout passed from Navigation/Layout
+      closeMenu();
+      navigate("/login"); // redirect to login page
+    }
+  };
+
+  const handleNavigate = (path) => {
+    navigate(path);
     closeMenu();
   };
 
@@ -50,10 +59,9 @@ function ProfileButton({ user, logout }) {
           <div className="upload-section">
             <div className="upload-circle"></div>
             <div className="upload-text">
-              <p>0 of 1,000 items</p>
               <button
                 className="upload-link"
-                onClick={() => navigate("/upload")}
+                onClick={() => handleNavigate("/photos")}
               >
                 Upload your photos
               </button>
@@ -64,21 +72,24 @@ function ProfileButton({ user, logout }) {
 
           <button
             className="dropdown-item"
-            onClick={() => navigate(`/users/${user.id}`)}
+            onClick={() => handleNavigate(`/users/${user.id}`)}
           >
             Profile
           </button>
           <button
             className="dropdown-item"
-            onClick={() => navigate("/messages")}
+            onClick={() => handleNavigate("/favorites")}
           >
-            Messages (0)
+            Favorites
           </button>
+
           <button
             className="dropdown-item"
-            onClick={() => navigate("/settings")}
+            onClick={() =>
+              window.open("https://github.com/DaneHoov/Glint", "_blank")
+            }
           >
-            Settings
+            About
           </button>
           <button className="dropdown-item logout" onClick={handleLogout}>
             Log out

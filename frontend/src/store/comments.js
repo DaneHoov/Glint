@@ -2,95 +2,121 @@ import { csrfFetch } from "./csrf";
 
 const SET_COMMENTS = "comments/SET_COMMENTS";
 const ADD_COMMENT = "comments/ADD_COMMENT";
-const DELETE_COMMENT = "comments/DELETE_COMMENT";
-const UPDATE_COMMENT = "comments/UPDATE_COMMENT";
+const EDIT_COMMENT = "comments/EDIT_COMMENT";
+const REMOVE_COMMENT = "comments/REMOVE_COMMENT";
 
 // Action creators
-export const setComments = (comments) => ({ type: SET_COMMENTS, comments });
-export const addComment = (comment) => ({ type: ADD_COMMENT, comment });
-export const deleteComment = (commentId) => ({
-  type: DELETE_COMMENT,
-  commentId,
+export const setComments = (photoId, comments) => ({
+  type: SET_COMMENTS,
+  photoId,
+  comments,
 });
-export const updateComment = (comment) => ({
-  type: UPDATE_COMMENT,
+
+export const addComment = (comment) => ({
+  type: ADD_COMMENT,
   comment,
 });
 
-// Fetch comments
+export const editCommentAction = (comment) => ({
+  type: EDIT_COMMENT,
+  comment,
+});
+
+export const removeCommentAction = (commentId, photoId) => ({
+  type: REMOVE_COMMENT,
+  commentId,
+  photoId,
+});
+
+// Thunks
+
 export const fetchComments = (photoId) => async (dispatch) => {
-  const res = await csrfFetch(`/api/photos/${photoId}/comments`);
+  const res = await csrfFetch(`/api/comments/photo/${photoId}`);
   if (res.ok) {
     const data = await res.json();
-    dispatch(setComments(data));
-  } else {
-    console.error("Failed to fetch comments");
+    dispatch(setComments(photoId, data.comments));
   }
 };
 
-// Create comment
-export const createComment = (photoId, commentData) => async (dispatch) => {
-  const res = await csrfFetch(`/api/photos/${photoId}/comments`, {
+export const createComment = (photoId, content) => async (dispatch) => {
+  const res = await csrfFetch(`/api/comments/photo/${photoId}`, {
     method: "POST",
-    body: JSON.stringify(commentData),
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ content }),
   });
 
   if (res.ok) {
     const newComment = await res.json();
     dispatch(addComment(newComment));
+    return newComment;
   } else {
-    console.error("Create comment failed");
+    return null;
   }
 };
 
-// Edit comment
-export const editComment = (commentId, commentData) => async (dispatch) => {
+export const editComment = (commentId, updatedData) => async (dispatch) => {
   const res = await csrfFetch(`/api/comments/${commentId}`, {
     method: "PUT",
-    body: JSON.stringify(commentData),
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(updatedData),
   });
 
   if (res.ok) {
     const updatedComment = await res.json();
-    dispatch(updateComment(updatedComment));
-  } else {
-    console.error("Edit comment failed");
+    dispatch(editCommentAction(updatedComment));
+    return updatedComment;
   }
 };
 
-// Delete comment
-export const removeComment = (commentId) => async (dispatch) => {
+export const removeComment = (commentId, photoId) => async (dispatch) => {
   const res = await csrfFetch(`/api/comments/${commentId}`, {
     method: "DELETE",
   });
 
   if (res.ok) {
-    dispatch(deleteComment(commentId));
-  } else {
-    console.error("Delete comment failed");
+    dispatch(removeCommentAction(commentId, photoId));
   }
 };
 
-const initialState = { all: [] };
+const initialState = {};
 
 export default function commentsReducer(state = initialState, action) {
   switch (action.type) {
     case SET_COMMENTS:
-      return { ...state, all: action.comments };
-    case ADD_COMMENT:
-      return { ...state, all: [action.comment, ...state.all] };
-    case DELETE_COMMENT:
       return {
         ...state,
-        all: state.all.filter((comment) => comment.id !== action.commentId),
+        [action.photoId]: action.comments,
       };
-    case UPDATE_COMMENT:
+
+    case ADD_COMMENT: {
+      const photoId = action.comment.photo_id;
+      const photoComments = state[photoId] || [];
       return {
         ...state,
-        all: state.all.map((c) =>
-          c.id === action.comment.id ? action.comment : c
+        [photoId]: [...photoComments, action.comment],
+      };
+    }
+
+    case EDIT_COMMENT: {
+      const photoId = action.comment.photo_id;
+      const photoComments = state[photoId] || [];
+      return {
+        ...state,
+        [photoId]: photoComments.map((comment) =>
+          comment.id === action.comment.id ? action.comment : comment
         ),
       };
+    }
+
+    case REMOVE_COMMENT: {
+      const { commentId, photoId } = action;
+      const photoComments = state[photoId] || [];
+      return {
+        ...state,
+        [photoId]: photoComments.filter((comment) => comment.id !== commentId),
+      };
+    }
+
     default:
       return state;
   }

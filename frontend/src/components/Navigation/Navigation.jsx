@@ -1,22 +1,19 @@
 import { useState, useEffect } from "react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import ProfileButton from "./ProfileButton";
-import * as sessionActions from "../../store/session";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import { RiCameraLensAiFill } from "react-icons/ri";
 import "./Navigation.css";
 
-function Navigation({ isLoaded }) {
+function Navigation({ isLoaded, onLogout }) {
   const location = useLocation();
   const sessionUser = useSelector((state) => state.session.user);
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [showSearch, setShowSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
-    // Auto-redirect to profile if logged in and on login/signup pages
     if (
       sessionUser &&
       (location.pathname === "/login" || location.pathname === "/signup")
@@ -31,11 +28,6 @@ function Navigation({ isLoaded }) {
     setSearchQuery("");
   };
 
-  const logout = (e) => {
-    e.preventDefault();
-    dispatch(sessionActions.logout());
-  };
-
   const handleSearchKeyDown = (e) => {
     if (e.key === "Enter" && searchQuery.trim()) {
       navigate(`/search?query=${encodeURIComponent(searchQuery.trim())}`);
@@ -45,26 +37,6 @@ function Navigation({ isLoaded }) {
 
   const hideNavRight =
     location.pathname === "/login" || location.pathname === "/signup";
-
-  const sessionLinks = sessionUser ? (
-    <>
-      <FaMagnifyingGlass
-        className="search-icon logged-in"
-        onClick={toggleSearch}
-      />
-      <ProfileButton user={sessionUser} logout={logout} />
-    </>
-  ) : (
-    <>
-      <FaMagnifyingGlass className="search-icon" onClick={toggleSearch} />
-      <NavLink className="nav-link" to="/login">
-        Log In
-      </NavLink>
-      <NavLink className="nav-link signup" to="/signup">
-        Sign Up
-      </NavLink>
-    </>
-  );
 
   return (
     <>
@@ -90,10 +62,48 @@ function Navigation({ isLoaded }) {
             <RiCameraLensAiFill className="logo-icon" />
             <span className="logo-text">Glint</span>
           </NavLink>
+
+          {isLoaded && sessionUser && (
+            <>
+              <NavLink className="nav-link" to={`/users/${sessionUser.id}`}>
+                Profile
+              </NavLink>
+              <NavLink className="nav-link" to="/photos">
+                Photos
+              </NavLink>
+              <NavLink className="nav-link" to="/albums">
+                Albums
+              </NavLink>
+              <NavLink className="nav-link" to="/favorites">
+                Favorites
+              </NavLink>
+            </>
+          )}
         </div>
 
         {!hideNavRight && (
-          <div className="nav-right">{isLoaded && sessionLinks}</div>
+          <div className="nav-right">
+            {isLoaded && (
+              <>
+                <FaMagnifyingGlass
+                  className="search-icon logged-in"
+                  onClick={toggleSearch}
+                />
+                {sessionUser ? (
+                  <ProfileButton user={sessionUser} logout={onLogout} />
+                ) : (
+                  <>
+                    <NavLink className="nav-link" to="/login">
+                      Log In
+                    </NavLink>
+                    <NavLink className="nav-link signup" to="/signup">
+                      Sign Up
+                    </NavLink>
+                  </>
+                )}
+              </>
+            )}
+          </div>
         )}
       </nav>
     </>

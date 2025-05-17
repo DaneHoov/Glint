@@ -5,24 +5,28 @@ import { useModal } from "../../context/Modal";
 
 const PhotoFormModal = () => {
   const dispatch = useDispatch();
-  const { closeModal } = useModal();
+  const { closeModal, setModalContent } = useModal();
 
   const [url, setUrl] = useState("");
+  const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [errors, setErrors] = useState([]);
 
+  const isSubmitDisabled = url.trim() === "";
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrors([]);
 
-    const validationErrors = [];
-    if (!url) validationErrors.push("URL is required");
-    if (!description) validationErrors.push("Description is required");
-    if (validationErrors.length) return setErrors(validationErrors);
-
-    const newPhoto = await dispatch(createPhoto({ url, description }));
-
+    const newPhoto = await dispatch(createPhoto({ url, title, description }));
     if (newPhoto) {
       closeModal();
+    } else {
+      setModalContent(
+        <div className="error-modal">
+          <h2>Photo upload unsuccessful</h2>
+        </div>
+      );
     }
   };
 
@@ -46,14 +50,24 @@ const PhotoFormModal = () => {
           />
         </label>
         <label>
-          Description
+          Title (Optional)
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+        </label>
+        <label>
+          Description (Optional)
           <input
             type="text"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
         </label>
-        <button type="submit">Create Photo</button>
+        <button type="submit" disabled={isSubmitDisabled}>
+          Create Photo
+        </button>
       </form>
     </div>
   );

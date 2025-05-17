@@ -8,15 +8,17 @@ import {
 } from "../../store/comments";
 import "./CommentsPage.css";
 
-export default function CommentsPage() {
+export default function CommentsPage({ photoId }) {
   const dispatch = useDispatch();
-  const comments = useSelector((state) => state.comments.all);
+  const comments = useSelector((state) => state.comments);
   const [formData, setFormData] = useState({ text: "" });
   const [editingId, setEditingId] = useState(null);
 
   useEffect(() => {
-    dispatch(fetchComments());
-  }, [dispatch]);
+    if (photoId) {
+      dispatch(fetchComments(photoId));
+    }
+  }, [dispatch, photoId]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -24,11 +26,13 @@ export default function CommentsPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!photoId) return; // safety check
+
     if (editingId) {
       await dispatch(editComment(editingId, formData));
       setEditingId(null);
     } else {
-      await dispatch(createComment(formData));
+      await dispatch(createComment(photoId, formData.text));
     }
     setFormData({ text: "" });
   };

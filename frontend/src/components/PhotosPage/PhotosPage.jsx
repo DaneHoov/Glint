@@ -28,7 +28,6 @@ const PhotosPage = () => {
   };
 
   const handleDelete = (photoId) => {
-    console.log("Dispatching removePhoto for ID:", photoId);
     dispatch(removePhoto(photoId));
   };
 
@@ -78,15 +77,18 @@ const PhotosPage = () => {
             >
               <h3>{photo.title}</h3>
             </div>
-            <button
-              className="photo-remove-btn"
-              onClick={() => {
-                console.log("Clicked delete for:", photo.id);
-                handleDelete(photo.id);
-              }}
-            >
-              <FaTimesCircle />
-            </button>
+            <div className="photo-button-container">
+              <button
+                className="photo-remove-btn"
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDelete(photo.id);
+                }}
+              >
+                <FaTimesCircle />
+              </button>
+            </div>
           </div>
         ))}
       </div>

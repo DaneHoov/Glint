@@ -28,6 +28,7 @@ const PhotosPage = () => {
   };
 
   const handleDelete = (photoId) => {
+    console.log("Attempting to delete photo:", photoId);
     dispatch(removePhoto(photoId));
   };
 

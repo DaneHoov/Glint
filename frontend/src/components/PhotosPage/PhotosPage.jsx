@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchPhotos, deletePhoto } from "../../store/photos";
+import { fetchPhotos, removePhoto } from "../../store/photos";
 import PhotosDetailsModal from "./PhotosDetailsModal";
 import { FaCamera, FaTimesCircle } from "react-icons/fa";
 import { useModal } from "../../context/Modal";
@@ -28,7 +28,7 @@ const PhotosPage = () => {
   };
 
   const handleDelete = (photoId) => {
-    dispatch(deletePhoto(photoId));
+    dispatch(removePhoto(photoId));
   };
 
   const handlePhotoCreated = () => {

@@ -50,9 +50,7 @@ module.exports = {
     );
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable({
-      tableName: "PhotoLabels",
-      schema: options.schema,
-    });
+    options.tableName = "PhotoLabels";
+    await queryInterface.dropTable(options);
   },
 };

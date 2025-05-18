@@ -53,12 +53,7 @@ module.exports = {
     );
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable(
-      {
-        tableName: "Comments",
-        schema: options.schema,
-      },
-      options
-    );
+    options.tableName = "Comments";
+    await queryInterface.dropTable(options);
   },
 };

@@ -28,7 +28,7 @@ const PhotosPage = () => {
   };
 
   const handleDelete = (photoId) => {
-    console.log("Attempting to delete photo:", photoId);
+    console.log("Dispatching removePhoto for ID:", photoId);
     dispatch(removePhoto(photoId));
   };
 
@@ -65,21 +65,23 @@ const PhotosPage = () => {
 
       <div className="photo-grid">
         {userPhotos.map((photo) => (
-          <div
-            key={photo.id}
-            className="photo-card"
-            onClick={() => handlePhotoClick(photo)}
-          >
-            <div className="photo-card__img-container">
+          <div key={photo.id} className="photo-card">
+            <div
+              className="photo-card__img-container"
+              onClick={() => handlePhotoClick(photo)}
+            >
               <img src={photo.image_url} alt={photo.title} />
             </div>
-            <div className="photo-details">
+            <div
+              className="photo-details"
+              onClick={() => handlePhotoClick(photo)}
+            >
               <h3>{photo.title}</h3>
             </div>
             <button
               className="photo-remove-btn"
-              onClick={(e) => {
-                e.stopPropagation();
+              onClick={() => {
+                console.log("Clicked delete for:", photo.id);
                 handleDelete(photo.id);
               }}
             >

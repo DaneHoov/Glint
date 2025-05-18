@@ -39,7 +39,7 @@ export const createPhoto = (photoData) => async (dispatch) => {
 };
 
 export const removePhoto = (photoId) => async (dispatch) => {
-  console.log("removePhoto thunk called for photo:", photoId);
+  alert(`Deleting ${photoId}`);
   const res = await csrfFetch(`/api/photos/${photoId}`, {
     method: "DELETE",
   });

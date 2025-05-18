@@ -72,7 +72,7 @@ router.delete("/:id", requireAuth, async (req, res, next) => {
       return res.status(403).json({ message: "Unauthorized" });
     }
 
-    await Photos.destroy({ where: { id } });
+    await photo.destroy();
 
     return res.json({ message: "Photo deleted" });
   } catch (err) {

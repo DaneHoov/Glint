@@ -16,23 +16,29 @@ module.exports = (sequelize, DataTypes) => {
       Photo.hasMany(models.Comment, {
         foreignKey: "photo_id",
         onDelete: "CASCADE",
+        hooks: true,
       });
 
       Photo.hasMany(models.Favorite, {
         foreignKey: "photo_id",
         onDelete: "CASCADE",
+        hooks: true,
       });
 
       Photo.belongsToMany(models.Album, {
         through: models.AlbumPhoto,
         foreignKey: "photo_id",
         otherKey: "album_id",
+        onDelete: "CASCADE",
+        hooks: true,
       });
 
       Photo.belongsToMany(models.Label, {
         through: models.PhotoLabel,
         foreignKey: "photo_id",
         otherKey: "label_id",
+        onDelete: "CASCADE",
+        hooks: true,
       });
     }
   }

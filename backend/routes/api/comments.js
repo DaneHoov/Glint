@@ -1,57 +1,96 @@
 const express = require("express");
-const router = express.Router();
+const { Comment, Photo, User } = require("../../db/models");
 const { requireAuth } = require("../../utils/auth");
-const { Comment } = require("../../db/models");
+const router = express.Router();
 
-// GET all comments
-router.get("/", async (req, res) => {
-  const comments = await Comment.findAll();
-  res.json(comments);
-});
-
-// POST new comment (requires auth)
-router.post("/", requireAuth, async (req, res, next) => {
+// GET comments for a specific photo
+router.get("/photo/:photoId", async (req, res, next) => {
   try {
-    const { photoId, text } = req.body;
-    const comment = await Comment.create({
-      userId: req.user.id,
-      photoId,
-      text,
+    const { photoId } = req.params;
+    const comments = await Comment.findAll({
+      where: { photo_id: photoId },
+      include: [{ model: User, attributes: ["id", "username"] }],
+      order: [["createdAt", "ASC"]],
     });
-    res.status(201).json(comment);
+    return res.json({ comments });
   } catch (err) {
     next(err);
   }
 });
 
-// PUT comment (requires auth and ownership)
-router.put("/:commentId", requireAuth, async (req, res, next) => {
+// POST create a comment on a photo (requires auth)
+router.post("/photo/:photoId", requireAuth, async (req, res, next) => {
   try {
-    const comment = await Comment.findByPk(req.params.commentId);
+    console.log("BODY:", req.body);
+    const { photoId } = req.params;
+    const { content } = req.body;
 
-    if (!comment) return res.status(404).json({ error: "Comment not found" });
-    if (comment.userId !== req.user.id)
-      return res.status(403).json({ error: "Unauthorized" });
+    if (!content || content.trim() === "") {
+      return res.status(400).json({ message: "Comment content is required" });
+    }
 
-    const { text } = req.body;
-    await comment.update({ text });
-    res.json(comment);
+    const photo = await Photo.findByPk(photoId);
+    if (!photo) {
+      return res.status(404).json({ message: "Photo not found" });
+    }
+
+    const newComment = await Comment.create({
+      content,
+      photo_id: photoId,
+      user_id: req.user.id,
+    });
+
+    return res.status(201).json(newComment);
   } catch (err) {
     next(err);
   }
 });
 
-// DELETE comment (requires auth and ownership)
-router.delete("/:commentId", requireAuth, async (req, res, next) => {
+// PUT edit a comment (requires auth and ownership)
+router.put("/:id", requireAuth, async (req, res, next) => {
   try {
-    const comment = await Comment.findByPk(req.params.commentId);
+    const { id } = req.params;
+    const { content } = req.body;
 
-    if (!comment) return res.status(404).json({ error: "Comment not found" });
-    if (comment.userId !== req.user.id)
-      return res.status(403).json({ error: "Unauthorized" });
+    const comment = await Comment.findByPk(id);
+    if (!comment) {
+      return res.status(404).json({ message: "Comment not found" });
+    }
 
+    if (comment.user_id !== req.user.id) {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+
+    if (!content || content.trim() === "") {
+      return res.status(400).json({ message: "Content is required" });
+    }
+
+    comment.content = content;
+    await comment.save();
+
+    const updatedComment = await Comment.findByPk(id, {
+      include: [{ model: User, attributes: ["id", "username"] }],
+    });
+
+    return res.json(updatedComment);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// DELETE a comment (requires auth and ownership)
+router.delete("/:id", requireAuth, async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const comment = await Comment.findByPk(id);
+    if (!comment) {
+      return res.status(404).json({ message: "Comment not found" });
+    }
+    if (comment.user_id !== req.user.id) {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
     await comment.destroy();
-    res.json({ message: "Comment deleted successfully" });
+    return res.json({ message: "Comment deleted" });
   } catch (err) {
     next(err);
   }

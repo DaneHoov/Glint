@@ -1,6 +1,6 @@
 "use strict";
 
-const { Favorites } = require("../models");
+const { Favorite } = require("../models");
 const bcrypt = require("bcryptjs");
 
 let options = {};
@@ -11,7 +11,7 @@ if (process.env.NODE_ENV === "production") {
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await Favorites.bulkCreate([
+    await Favorite.bulkCreate([
       {
         user_id: 1,
         photo_id: 3,

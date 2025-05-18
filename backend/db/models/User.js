@@ -5,10 +5,10 @@ const { Model, Validator } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     static associate(models) {
-      User.hasMany(models.Photos, { foreignKey: "user_id" });
-      User.hasMany(models.Albums, { foreignKey: "user_id" });
-      User.hasMany(models.Comments, { foreignKey: "user_id" });
-      User.hasMany(models.Favorites, { foreignKey: "user_id" });
+      User.hasMany(models.Photo, { foreignKey: "user_id" });
+      User.hasMany(models.Album, { foreignKey: "user_id" });
+      User.hasMany(models.Comment, { foreignKey: "user_id" });
+      User.hasMany(models.Favorite, { foreignKey: "user_id" });
     }
   }
 
@@ -61,6 +61,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: "User",
+      tableName: "users",
       defaultScope: {
         attributes: {
           exclude: ["hashedPassword", "email", "createdAt", "updatedAt"],

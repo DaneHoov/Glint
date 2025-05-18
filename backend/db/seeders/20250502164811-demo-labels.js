@@ -1,6 +1,6 @@
 "use strict";
 
-const { Labels } = require("../models");
+const { Label } = require("../models");
 const bcrypt = require("bcryptjs");
 
 let options = {};
@@ -11,7 +11,7 @@ if (process.env.NODE_ENV === "production") {
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await Labels.bulkCreate([
+    await Label.bulkCreate([
       {
         name: "Nature",
         createdAt: new Date(),

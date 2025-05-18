@@ -1,20 +1,20 @@
 const express = require("express");
 const router = express.Router();
-const { PhotoLabels, Photos, Labels } = require("../../db/models");
+const { PhotoLabel, Photo, Label } = require("../../db/models");
 const { requireAuth } = require("../../utils/auth");
 
 // POST /photolabels - Associate a label with a photo
 router.post("/", requireAuth, async (req, res) => {
   const { photoId, labelId } = req.body;
 
-  const photo = await Photos.findByPk(photoId);
-  const label = await Labels.findByPk(labelId);
+  const photo = await Photo.findByPk(photoId);
+  const label = await Label.findByPk(labelId);
 
   if (!photo || !label) {
     return res.status(404).json({ message: "Photo or Label not found" });
   }
 
-  const photoLabel = await PhotoLabels.create({ photoId, labelId });
+  const photoLabel = await PhotoLabel.create({ photoId, labelId });
   res.status(201).json(photoLabel);
 });
 
@@ -22,7 +22,7 @@ router.post("/", requireAuth, async (req, res) => {
 router.delete("/", requireAuth, async (req, res) => {
   const { photoId, labelId } = req.body;
 
-  const photoLabel = await PhotoLabels.findOne({
+  const photoLabel = await PhotoLabel.findOne({
     where: { photoId, labelId }
   });
 

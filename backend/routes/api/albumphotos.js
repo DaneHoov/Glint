@@ -1,14 +1,14 @@
 const express = require("express");
 const router = express.Router();
-const { AlbumPhotos, Photos } = require("../../db/models");
+const { AlbumPhoto, Photo } = require("../../db/models");
 
 // GET /albumphotos/:albumId - Get all photos in an album
 router.get("/:albumId", async (req, res) => {
   const albumId = req.params.albumId;
 
-  const photos = await AlbumPhotos.findAll({
+  const photos = await AlbumPhoto.findAll({
     where: { album_id: albumId },
-    include: { model: Photos },
+    include: { model: Photo },
   });
 
   res.json(photos);
@@ -18,7 +18,7 @@ router.get("/:albumId", async (req, res) => {
 router.post("/", async (req, res) => {
   const { album_id, photo_id } = req.body;
 
-  const newEntry = await AlbumPhotos.create({ album_id, photo_id });
+  const newEntry = await AlbumPhoto.create({ album_id, photo_id });
 
   res.status(201).json(newEntry);
 });
@@ -27,7 +27,7 @@ router.post("/", async (req, res) => {
 router.delete("/", async (req, res) => {
   const { album_id, photo_id } = req.body;
 
-  const entry = await AlbumPhotos.findOne({ where: { album_id, photo_id } });
+  const entry = await AlbumPhoto.findOne({ where: { album_id, photo_id } });
 
   if (!entry) {
     return res.status(404).json({ error: "Photo not found in album" });

@@ -5,8 +5,9 @@ const bcrypt = require("bcryptjs");
 
 let options = {};
 if (process.env.NODE_ENV === "production") {
-  options.schema = process.env.SCHEMA; // define your schema in options object
+  options.schema = process.env.SCHEMA;
 }
+options.tableName = "users";
 
 module.exports = {
   async up(queryInterface, Sequelize) {
@@ -39,7 +40,7 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    options.tableName = "Users";
+    options.tableName = "users";
     const Op = Sequelize.Op;
     return queryInterface.bulkDelete(
       options,

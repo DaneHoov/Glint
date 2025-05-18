@@ -82,7 +82,7 @@ router.get("/", (req, res) => {
 //Get Current User
 router.get("/", (req, res) => {
   if (req.user) {
-    return res.json(user);
+    return res.json(User);
   }
 });
 

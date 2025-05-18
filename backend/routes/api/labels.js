@@ -1,10 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const { Labels } = require("../../db/models");
+const { Label } = require("../../db/models");
 
 // GET /labels - Get all labels
 router.get("/", async (req, res) => {
-  const labels = await Labels.findAll();
+  const labels = await Label.findAll();
   res.json(labels);
 });
 
@@ -16,7 +16,7 @@ router.post("/", async (req, res) => {
     return res.status(400).json({ error: "Label name is required" });
   }
 
-  const label = await Labels.create({ name });
+  const label = await Label.create({ name });
   res.status(201).json(label);
 });
 

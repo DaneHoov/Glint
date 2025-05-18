@@ -1,32 +1,63 @@
 "use strict";
 
-const { AlbumPhotos } = require("../models");
-const bcrypt = require("bcryptjs");
+const { Album, Photo, AlbumPhoto } = require("../models");
 
 let options = {};
 if (process.env.NODE_ENV === "production") {
-  options.schema = process.env.SCHEMA; // define your schema in options object
+  options.schema = process.env.SCHEMA;
 }
 
-/** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await AlbumPhotos.bulkCreate([
+    // Find albums by title
+    const summerVibes = await Album.findOne({
+      where: { title: "Summer Vibes" },
+    });
+    const winterWonderland = await Album.findOne({
+      where: { title: "Winter Wonderland" },
+    });
+    const rockNRoll = await Album.findOne({ where: { title: "Rock n Roll" } });
+
+    // Find photos by title
+    const beachSunset = await Photo.findOne({
+      where: { title: "Beach sunset" },
+    });
+    const skiingAdventure = await Photo.findOne({
+      where: { title: "Skiing adventure" },
+    });
+    const concertNight = await Photo.findOne({
+      where: { title: "Concert night" },
+    });
+
+    if (
+      !summerVibes ||
+      !winterWonderland ||
+      !rockNRoll ||
+      !beachSunset ||
+      !skiingAdventure ||
+      !concertNight
+    ) {
+      throw new Error(
+        "Required albums or photos not found for AlbumPhoto seeder."
+      );
+    }
+
+    await AlbumPhoto.bulkCreate([
       {
-        album_id: 1, // Summer Vibes
-        photo_id: 1, // Beach sunset
+        album_id: summerVibes.id,
+        photo_id: beachSunset.id,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
-        album_id: 2, // Winter Wonderland
-        photo_id: 2, // fresh powder on the slopes
+        album_id: winterWonderland.id,
+        photo_id: skiingAdventure.id,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
-        album_id: 3, // Concert Memories
-        photo_id: 3, // encore
+        album_id: rockNRoll.id,
+        photo_id: concertNight.id,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -34,10 +65,7 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.bulkDelete(
-      { tableName: "AlbumPhotos", schema: options.schema },
-      null,
-      {}
-    );
+    options.tableName = "AlbumPhotos";
+    return queryInterface.bulkDelete(options, null, {});
   },
 };

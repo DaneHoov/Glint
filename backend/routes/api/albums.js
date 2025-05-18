@@ -6,18 +6,23 @@ const { Album, Photo } = require("../../db/models");
 // Get all albums for current user
 router.get("/", requireAuth, async (req, res) => {
   const albums = await Album.findAll({
-    where: { userId: req.user.id },
+    where: { user_id: req.user.id },
+    include: [{ model: Photo }],
   });
   res.json({ albums });
 });
 
 // Create a new album
 router.post("/", requireAuth, async (req, res) => {
-  const { name, description } = req.body;
+  const { title, description } = req.body;
+
+  if (!title) {
+    return res.status(400).json({ message: "Album title is required" });
+  }
 
   const newAlbum = await Album.create({
-    userId: req.user.id,
-    name,
+    user_id: req.user.id,
+    title,
     description,
   });
 
@@ -26,25 +31,26 @@ router.post("/", requireAuth, async (req, res) => {
 
 // Update an album
 router.put("/:albumId", requireAuth, async (req, res) => {
-  const { name, description } = req.body;
+  const { title, description } = req.body;
   const { albumId } = req.params;
 
   const album = await Album.findByPk(albumId);
-  if (!album || album.userId !== req.user.id) {
+  if (!album || album.user_id !== req.user.id) {
     return res.status(404).json({ message: "Album not found or unauthorized" });
   }
 
-  album.name = name;
+  album.title = title;
   album.description = description;
   await album.save();
 
+  await album.reload({ include: [{ model: Photos }] });
   res.json(album);
 });
 
 // Delete an album
 router.delete("/:albumId", requireAuth, async (req, res) => {
   const album = await Album.findByPk(req.params.albumId);
-  if (!album || album.userId !== req.user.id) {
+  if (!album || album.user_id !== req.user.id) {
     return res.status(404).json({ message: "Album not found or unauthorized" });
   }
 
@@ -72,11 +78,17 @@ router.post("/:albumId/photos", requireAuth, async (req, res, next) => {
   const { photoId } = req.body;
   const { albumId } = req.params;
 
+  // console.log("Received POST to add photo to album:", {
+  //   albumId,
+  //   photoId,
+  //   userId: req.user.id,
+  // });
+
   try {
     const album = await Album.findByPk(albumId);
     if (!album) return res.status(404).json({ message: "Album not found" });
 
-    if (album.userId !== req.user.id) {
+    if (album.user_id !== req.user.id) {
       return res.status(403).json({ message: "Unauthorized" });
     }
 
@@ -106,7 +118,7 @@ router.delete(
       const album = await Album.findByPk(albumId);
       if (!album) return res.status(404).json({ message: "Album not found" });
 
-      if (album.userId !== req.user.id) {
+      if (album.user_id !== req.user.id) {
         return res.status(403).json({ message: "Unauthorized" });
       }
 

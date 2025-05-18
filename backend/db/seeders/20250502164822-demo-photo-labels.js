@@ -1,44 +1,65 @@
 "use strict";
 
-const { PhotoLabels } = require("../models");
-const bcrypt = require("bcryptjs");
+const { Photo, Label, PhotoLabel } = require("../models");
 
 let options = {};
 if (process.env.NODE_ENV === "production") {
-  options.schema = process.env.SCHEMA; // define your schema in options object
+  options.schema = process.env.SCHEMA;
 }
 
-/** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await PhotoLabels.bulkCreate([
+    // Look up photo records
+    const beach = await Photo.findOne({ where: { title: "Beach sunset" } });
+    const ski = await Photo.findOne({ where: { title: "Skiing adventure" } });
+    const concert = await Photo.findOne({ where: { title: "Concert night" } });
+
+    // Look up label records
+    const nature = await Label.findOne({ where: { name: "Nature" } });
+    const adventure = await Label.findOne({ where: { name: "Adventure" } });
+    const concertLabel = await Label.findOne({ where: { name: "Concert" } });
+    const travel = await Label.findOne({ where: { name: "Travel" } });
+
+    if (
+      !beach ||
+      !ski ||
+      !concert ||
+      !nature ||
+      !adventure ||
+      !concertLabel ||
+      !travel
+    ) {
+      throw new Error("Missing one or more required photos or labels.");
+    }
+
+    await PhotoLabel.bulkCreate([
       {
-        photo_id: 1, // Beach sunset
-        label_id: 1, // Nature
+        photo_id: beach.id,
+        label_id: nature.id,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
-        photo_id: 1, // Beach sunset
-        label_id: 4, // Travel
+        photo_id: beach.id,
+        label_id: travel.id,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
-        photo_id: 2, // Skiing adventure
-        label_id: 1, // Nature
+        photo_id: ski.id,
+        label_id: nature.id,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
-        photo_id: 2, // Skiing adventure
-        label_id: 2, // Adventure
+        photo_id: ski.id,
+        label_id: adventure.id,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
-        photo_id: 3, // Concert night
-        label_id: 3, // Concert
+        photo_id: concert.id,
+        label_id: concertLabel.id,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -46,10 +67,7 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.bulkDelete(
-      { tableName: "PhotoLabels", schema: options.schema },
-      null,
-      {}
-    );
+    options.tableName = "PhotoLabels";
+    return queryInterface.bulkDelete(options, null, {});
   },
 };

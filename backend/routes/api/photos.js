@@ -3,10 +3,17 @@ const { Photo, User } = require("../../db/models");
 const { requireAuth } = require("../../utils/auth");
 const router = express.Router();
 
-// GET all photos
-router.get("/", async (req, res) => {
-  const photos = await Photo.findAll();
-  return res.json({ photos });
+// GET all photos belonging to the logged-in user
+router.get("/", requireAuth, async (req, res) => {
+  try {
+    const photos = await Photo.findAll({
+      where: { user_id: req.user.id },
+    });
+    return res.json({ photos });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Internal server error" });
+  }
 });
 
 // POST create a new photo
@@ -15,9 +22,9 @@ router.post("/", requireAuth, async (req, res, next) => {
     const { title, url, description } = req.body;
     const newPhoto = await Photo.create({
       title,
-      url,
+      image_url: url,
       description,
-      userId: req.user.id,
+      user_id: req.user.id,
     });
     return res.status(201).json(newPhoto);
   } catch (err) {
@@ -36,12 +43,12 @@ router.put("/:id", requireAuth, async (req, res, next) => {
       return res.status(404).json({ message: "Photo not found" });
     }
 
-    if (photo.userId !== req.user.id) {
+    if (photo.user_id !== req.user.id) {
       return res.status(403).json({ message: "Unauthorized" });
     }
 
     photo.title = title;
-    photo.url = url;
+    photo.image_url = url;
     photo.description = description;
     await photo.save();
 
@@ -61,11 +68,12 @@ router.delete("/:id", requireAuth, async (req, res, next) => {
       return res.status(404).json({ message: "Photo not found" });
     }
 
-    if (photo.userId !== req.user.id) {
+    if (photo.user_id !== req.user.id) {
       return res.status(403).json({ message: "Unauthorized" });
     }
 
-    await photo.destroy();
+    await Photos.destroy({ where: { id } });
+
     return res.json({ message: "Photo deleted" });
   } catch (err) {
     next(err);

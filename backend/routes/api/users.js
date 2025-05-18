@@ -1,7 +1,7 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const { setTokenCookie, requireAuth } = require("../../utils/auth");
-const { User } = require("../../db/models");
+const { User, Album, Photo } = require("../../db/models"); // <-- Added Album, Photo
 const { check } = require("express-validator");
 const { handleValidationErrors } = require("../../utils/validation");
 const router = express.Router();
@@ -57,6 +57,25 @@ router.post("/", validateSignup, async (req, res) => {
   return res.json({
     user: safeUser,
   });
+});
+
+router.get("/search", async (req, res) => {
+  const { username } = req.query;
+
+  if (!username) {
+    return res
+      .status(400)
+      .json({ error: "Username is required in query params" });
+  }
+
+  const user = await User.findOne({
+    where: { username },
+    include: [{ model: Album }, { model: Photo }],
+  });
+
+  if (!user) return res.status(404).json({ error: "User not found" });
+
+  return res.json(user);
 });
 
 module.exports = router;

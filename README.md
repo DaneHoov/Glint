@@ -13,7 +13,6 @@
 - [🗃️ Database Schema](#️-database-schema)
 - [📡 API Endpoints](#-api-endpoints)
 - [📸 Screenshots](#-screenshots)
-- [💡 Future Improvements](#-future-improvements)
 - [📄 License](#-license)
 
 ---
@@ -116,8 +115,6 @@ If you have a schema diagram, you can embed it below:
 ---
 
 ## 📸 Screenshots
-
-You can add images to a `screenshots/` folder and reference them here:
 
 ### 🖼️ Photo Grid View
 

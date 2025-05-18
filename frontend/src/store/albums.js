@@ -32,7 +32,8 @@ export const fetchAlbums = () => async (dispatch) => {
   }
 };
 
-export const createAlbum = (albumData) => async (dispatch) => {
+// New thunk alias
+export const addAlbumThunk = (albumData) => async (dispatch) => {
   const res = await csrfFetch("/api/albums", {
     method: "POST",
     body: JSON.stringify(albumData),
@@ -48,6 +49,9 @@ export const createAlbum = (albumData) => async (dispatch) => {
     return null;
   }
 };
+
+// Keep createAlbum for other usage if needed
+export const createAlbum = addAlbumThunk;
 
 export const editAlbum = (albumId, albumData) => async (dispatch) => {
   const res = await csrfFetch(`/api/albums/${albumId}`, {

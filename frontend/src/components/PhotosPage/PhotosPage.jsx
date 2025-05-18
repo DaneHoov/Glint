@@ -3,14 +3,18 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchPhotos, deletePhoto } from "../../store/photos";
 import PhotosDetailsModal from "./PhotosDetailsModal";
 import { FaCamera, FaTimesCircle } from "react-icons/fa";
+import { useModal } from "../../context/Modal";
+import PhotoFormModal from "./PhotoFormModal";
 import "./PhotosPage.css";
 
 const PhotosPage = () => {
   const dispatch = useDispatch();
+  const { setModalContent } = useModal();
   const photos = useSelector((state) => state.photos.all);
   const sessionUser = useSelector((state) => state.session.user);
 
   const [selectedPhoto, setSelectedPhoto] = useState(null);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   useEffect(() => {
     dispatch(fetchPhotos());
@@ -27,6 +31,12 @@ const PhotosPage = () => {
     dispatch(deletePhoto(photoId));
   };
 
+  const handlePhotoCreated = () => {
+    dispatch(fetchPhotos());
+    setShowSuccess(true);
+    setTimeout(() => setShowSuccess(false), 2000);
+  };
+
   const userPhotos = photos.filter(
     (photo) => photo.user_id === sessionUser?.id
   );
@@ -38,13 +48,19 @@ const PhotosPage = () => {
         <div className="create-photo-container">
           <button
             className="create-photo-button"
-            onClick={() => setSelectedPhoto({ isNew: true })}
+            onClick={() =>
+              setModalContent(<PhotoFormModal onSuccess={handlePhotoCreated} />)
+            }
           >
             <FaCamera className="camera-icon" />
             Create New Photo
           </button>
         </div>
       </div>
+
+      {showSuccess && (
+        <div className="success-message">Photo created successfully!</div>
+      )}
 
       <div className="photo-grid">
         {userPhotos.map((photo) => (
@@ -58,7 +74,6 @@ const PhotosPage = () => {
             </div>
             <div className="photo-details">
               <h3>{photo.title}</h3>
-              <p>{photo.description}</p>
             </div>
             <button
               className="photo-remove-btn"

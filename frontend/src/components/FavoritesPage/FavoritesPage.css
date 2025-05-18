@@ -11,6 +11,12 @@
   color: white;
 }
 
+.favorites-container h2 {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
 .favorite-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -19,14 +25,14 @@
 }
 
 .favorite-card {
-  border: 1px solid #ccc;
+  position: relative;
   border-radius: 8px;
   overflow: hidden;
   padding: 0.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #fafafa;
+  background-color: rgba(0, 0, 0, 0.8);
 }
 
 .favorite-photo {
@@ -39,7 +45,7 @@
 
 .favorite-card button {
   padding: 0.25rem 0.5rem;
-  background-color: #f97316;
+  background-color: #c2410c;
   color: white;
   border: none;
   border-radius: 4px;
@@ -47,5 +53,24 @@
 }
 
 .favorite-card button:hover {
-  background-color: #c2410c;
+  background-color: red;
+}
+
+.photo-remove-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 32px;
+  height: 32px;
+  background-color: red;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  color: white;
+  font-size: 18px;
+  padding: 0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }

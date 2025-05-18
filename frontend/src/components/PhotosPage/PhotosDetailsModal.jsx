@@ -114,9 +114,10 @@ const PhotosDetailsModal = ({ photo, onClose }) => {
           alt={photo.description || "Photo"}
           className="photo-details-image"
         />
+        <div className="photo-details-info">
         <h2>{photo.title || "Untitled"}</h2>
         <p>{photo.description}</p>
-
+</div>
         <div className="photo-actions">
           <button onClick={handleToggleFavorite} className="favorite-button">
             {hasFavorited ? (

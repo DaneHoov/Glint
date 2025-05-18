@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchFavorites, removeFavorite } from "../../store/favorites";
 import "./FavoritesPage.css";
+import { FaTimesCircle } from "react-icons/fa";
 
 export default function FavoritesPage() {
   const dispatch = useDispatch();
@@ -30,8 +31,11 @@ export default function FavoritesPage() {
               alt={favorite.Photo?.title || "Favorite photo"}
               className="favorite-photo"
             />
-            <button onClick={() => handleRemoveFavorite(favorite.photoId)}>
-              Remove
+            <button
+              className="photo-remove-btn"
+              onClick={() => handleRemoveFavorite(favorite.photoId)}
+            >
+              <FaTimesCircle />
             </button>
           </div>
         ))}

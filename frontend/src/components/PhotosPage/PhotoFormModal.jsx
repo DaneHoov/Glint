@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { createPhoto } from "../../store/photos";
 import { useModal } from "../../context/Modal";
+import "./PhotoFormModal.css";
 
 const PhotoFormModal = () => {
   const dispatch = useDispatch();

@@ -1,66 +1,54 @@
-import { useLocation } from "react-router-dom";
-import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setUserProfile } from "../../store/userProfile";
 import "./SearchResults.css";
 
 function SearchResults() {
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const searchQuery = queryParams.get("query")?.toLowerCase();
-
-  const photos = useSelector((state) => state.photos.allPhotos || []);
-  const users = useSelector((state) => state.session.users || []); // assuming users are in state
-
-  const [results, setResults] = useState({ photos: [], users: [] });
+  const [searchParams] = useSearchParams();
+  const username = searchParams.get("query");
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (searchQuery) {
-      const photoResults = photos.filter((photo) =>
-        photo.title.toLowerCase().includes(searchQuery)
-      );
-      const userResults = users.filter((user) =>
-        user.username.toLowerCase().includes(searchQuery)
-      );
-      setResults({ photos: photoResults, users: userResults });
+    if (username) {
+      fetch(`/api/users/search?username=${encodeURIComponent(username)}`)
+        .then((res) => {
+          if (!res.ok) throw new Error("User not found");
+          return res.json();
+        })
+        .then((data) => {
+          dispatch(setUserProfile(data));
+          navigate(`/users/${data.username}`);
+        })
+        .catch((err) => {
+          setError(err.message);
+          setLoading(false);
+        });
     }
-  }, [searchQuery, photos, users]);
+  }, [username, dispatch, navigate]);
 
-  return (
-    <div className="search-results">
-      <h2>Search Results for {searchQuery}</h2>
+  if (loading) {
+    return (
+      <div className="search-results-page">
+        <h1 className="search-heading">Search Results</h1>
+        <p className="search-status">Searching for “{username}”...</p>
+      </div>
+    );
+  }
 
-      <section>
-        <h3>Photos</h3>
-        <div className="photo-results">
-          {results.photos.length ? (
-            results.photos.map((photo) => (
-              <div key={photo.id} className="photo-item">
-                <img src={photo.imageUrl} alt={photo.title} />
-                <p>{photo.title}</p>
-              </div>
-            ))
-          ) : (
-            <p>No photos found.</p>
-          )}
-        </div>
-      </section>
+  if (error) {
+    return (
+      <div className="search-results-page">
+        <h1 className="search-heading">Search Results</h1>
+        <p className="search-status error">{error}</p>
+      </div>
+    );
+  }
 
-      <section>
-        <h3>Users</h3>
-        <div className="user-results">
-          {results.users.length ? (
-            results.users.map((user) => (
-              <div key={user.id} className="user-item">
-                <p>{user.username}</p>
-              </div>
-            ))
-          ) : (
-            <p>No users found.</p>
-          )}
-        </div>
-      </section>
-    </div>
-  );
+  return null;
 }
 
 export default SearchResults;

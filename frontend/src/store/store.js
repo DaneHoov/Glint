@@ -1,10 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { combineReducers } from "redux"; // Ensure combineReducers is imported
+import { combineReducers } from "redux";
 import sessionReducer from "./session";
 import photosReducer from "./photos";
 import albumsReducer from "./albums";
 import commentsReducer from "./comments";
 import favoritesReducer from "./favorites";
+import userProfileReducer from "./userProfile"; // ✅ NEW
 
 // Import redux-logger dynamically only in development
 let logger;
@@ -20,6 +21,7 @@ const rootReducer = combineReducers({
   albums: albumsReducer,
   comments: commentsReducer,
   favorites: favoritesReducer,
+  userProfile: userProfileReducer,
 });
 
 const configureAppStore = (preloadedState) => {
@@ -27,13 +29,13 @@ const configureAppStore = (preloadedState) => {
     reducer: rootReducer,
     preloadedState,
     middleware: (getDefaultMiddleware) => {
-      const middlewares = getDefaultMiddleware(); // Using getDefaultMiddleware
+      const middlewares = getDefaultMiddleware();
       if (logger) {
-        middlewares.push(logger); // Conditionally apply logger middleware
+        middlewares.push(logger);
       }
       return middlewares;
     },
-    devTools: process.env.NODE_ENV !== "production", // Enable Redux DevTools in non-production mode
+    devTools: process.env.NODE_ENV !== "production",
   });
 };
 

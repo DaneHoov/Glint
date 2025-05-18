@@ -3,6 +3,7 @@ import { csrfFetch } from "./csrf";
 // Action Types
 const SET_FAVORITES = "favorites/SET_FAVORITES";
 const SET_FAVORITE_COUNT = "favorites/SET_FAVORITE_COUNT";
+const REMOVE_FAVORITE_BY_PHOTO_ID = "favorites/REMOVE_BY_PHOTO_ID"; // ✅ NEW
 
 // Action Creators
 const setFavorites = (favorites) => ({
@@ -16,8 +17,13 @@ const setFavoriteCount = (photoId, count) => ({
   count,
 });
 
-// Thunks
+// ✅ NEW: Action creator to remove a favorite tied to a photo ID
+export const removeFavoriteByPhotoId = (photoId) => ({
+  type: REMOVE_FAVORITE_BY_PHOTO_ID,
+  photoId,
+});
 
+// Thunks
 export const fetchFavorites = () => async (dispatch) => {
   const res = await csrfFetch("/api/favorites/current");
   if (res.ok) {
@@ -86,6 +92,14 @@ export default function favoritesReducer(state = initialState, action) {
           [action.photoId]: action.count,
         },
       };
+    case REMOVE_FAVORITE_BY_PHOTO_ID: {
+      return {
+        ...state,
+        allFavorites: state.allFavorites.filter(
+          (fav) => fav.photo_id !== action.photoId
+        ),
+      };
+    }
     default:
       return state;
   }

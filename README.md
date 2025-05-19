@@ -13,7 +13,6 @@
 - [🗃️ Database Schema](#️-database-schema)
 - [📡 API Endpoints](#-api-endpoints)
 - [📸 Screenshots](#-screenshots)
-- [📄 License](#-license)
 
 ---
 
@@ -60,9 +59,7 @@ This project includes the following relational tables:
   - `album_photos`
   - `photo_labels`
 
-If you have a schema diagram, you can embed it below:
-
-![Database Schema](./screenshots/schema.png)
+![Glint Schema](./screenshots/glint_schema.png)
 
 ---
 
@@ -116,20 +113,20 @@ If you have a schema diagram, you can embed it below:
 
 ## 📸 Screenshots
 
+### 🧑 Profile Page
+
+![Profile Page](./screenshots/profile.png)
+
 ### 🖼️ Photo Grid View
 
-![Photo Grid](./screenshots/photo-grid.png)
+![Photo Grid](./screenshots/photogrid.png)
 
 ### 🗂️ Albums Page
 
-![Albums Page](./screenshots/albums.png)
+![Albums Page](./screenshots/albumspage.png)
 
-### 🔍 User Search & Profile
+### 💬 Photo Details Modal
 
-![User Profile](./screenshots/user-profile.png)
-
-### 💬 Photo Comments Modal
-
-![Comments Modal](./screenshots/comments.png)
+![Photo Details Modal](./screenshots/photodetails.png)
 
 ---

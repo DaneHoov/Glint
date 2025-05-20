@@ -43,7 +43,7 @@ router.put("/:albumId", requireAuth, async (req, res) => {
   album.description = description;
   await album.save();
 
-  await album.reload({ include: [{ model: Photos }] });
+  await album.reload({ include: [{ model: Photo }] });
   res.json(album);
 });
 

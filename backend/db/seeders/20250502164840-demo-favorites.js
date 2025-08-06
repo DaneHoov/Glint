@@ -1,38 +1,37 @@
 "use strict";
 
-const { Favorite } = require("../models");
-const bcrypt = require("bcryptjs");
+const { User, Photo } = require("../models");
 
 let options = {};
 if (process.env.NODE_ENV === "production") {
-  options.schema = process.env.SCHEMA; // define your schema in options object
+  options.schema = process.env.SCHEMA;
 }
+options.tableName = "Favorites";
 
-/** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await Favorite.bulkCreate([
+    // Look up users
+    const demoUser = await User.findOne({ where: { email: "demo@user.io" } });
+    const user1 = await User.findOne({ where: { email: "user1@user.io" } });
+
+    // Look up photos by title
+    const beach = await Photo.findOne({ where: { title: "Beach sunset" } });
+    const concert = await Photo.findOne({ where: { title: "Concert night" } });
+
+    if (!demoUser || !user1 || !beach || !concert) {
+      throw new Error("Missing required seed data for favorites.");
+    }
+
+    await queryInterface.bulkInsert(options, [
       {
-        user_id: 1,
-        photo_id: 3,
+        user_id: demoUser.id,
+        photo_id: beach.id,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
-        user_id: 2,
-        photo_id: 1,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        user_id: 3,
-        photo_id: 2,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        user_id: 3,
-        photo_id: 3,
+        user_id: user1.id,
+        photo_id: concert.id,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -40,10 +39,6 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.bulkDelete(
-      { tableName: "Favorites", schema: options.schema },
-      null,
-      {}
-    );
+    return queryInterface.bulkDelete(options, null, {});
   },
 };

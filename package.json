@@ -17,5 +17,8 @@
   "license": "ISC",
   "dependencies": {
     "@reduxjs/toolkit": "^2.8.2"
+  },
+  "devDependencies": {
+    "vite": "^6.3.5"
   }
 }

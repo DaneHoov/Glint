@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "sequelize": "sequelize --config config/database.js",
+    "sequelize": "sequelize --config config/database.js --migrations-path db/migrations --models-path db/models --seeders-path db/seeders",
     "sequelize-cli": "sequelize-cli --config config/database.js",
     "start": "per-env",
     "start:development": "nodemon ./bin/www",

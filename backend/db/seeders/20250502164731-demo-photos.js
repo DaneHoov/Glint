@@ -19,7 +19,7 @@ module.exports = {
 
     await Photo.bulkCreate([
       {
-        id: 1,
+        // id: 1,
         user_id: demoUser.id,
         image_url:
           "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1170&q=80",
@@ -29,7 +29,7 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
-        id: 2,
+        // id: 2,
         user_id: demoUser.id,
         image_url:
           "https://images.unsplash.com/photo-1613420365631-c588e7cac611?q=80&w=1635&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
@@ -39,7 +39,7 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
-        id: 3,
+        // id: 3,
         user_id: user1.id,
         image_url:
           "https://images.unsplash.com/photo-1507874457470-272b3c8d8ee2?auto=format&fit=crop&w=1170&q=80",
